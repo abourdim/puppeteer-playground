@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Puppeteer Playground — README</title>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Amiri&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#020617;--card:rgba(15,23,42,0.96);--border:rgba(148,163,184,0.28);
+  --text:#f9fafb;--text2:#9ca3af;--accent:#22c55e;--accent2:#3b82f6;
+  --code-bg:rgba(15,23,42,0.98);--code-border:rgba(31,41,55,0.95);
+  --font:system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
+  --mono:"SF Mono",ui-monospace,Menlo,Monaco,Consolas,"Fira Code",monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:var(--font);color:var(--text);line-height:1.7;
+  background:radial-gradient(circle at top left,rgba(34,197,94,.18),transparent 50%),
+    radial-gradient(circle at bottom right,rgba(59,130,246,.2),transparent 55%),var(--bg);
+  background-attachment:fixed;min-height:100vh;
+}
+.container{max-width:900px;margin:0 auto;padding:24px 20px 80px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* Header hero */
+.hero{text-align:center;padding:48px 0 36px;position:relative}
+.bismillah{font-family:"Amiri",serif;font-size:12px;opacity:.22;color:rgba(200,230,255,.9);margin-bottom:12px}
+.hero-logo{margin-bottom:16px}
+.hero-logo svg{width:80px;height:42px;color:#22c55e}
+.hero h1{
+  font-size:2.6rem;letter-spacing:.06em;text-transform:uppercase;font-weight:800;
+  background:linear-gradient(135deg,#10b981,#3b82f6,#a855f7,#ec4899,#10b981);
+  background-size:300% 300%;-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;animation:grad 6s ease infinite;margin-bottom:6px;
+}
+@keyframes grad{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.hero .subtitle{font-size:1.15rem;color:var(--text2);letter-spacing:.06em;margin-bottom:16px}
+.hero .langs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.lang-chip{
+  display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:999px;
+  border:1px solid rgba(34,197,94,.5);font-size:.78rem;color:#bbf7d0;
+  background:radial-gradient(circle at top left,rgba(34,197,94,.2),rgba(15,23,42,.9));
+  letter-spacing:.06em;
+}
+
+/* Section */
+.section{margin-top:40px}
+.section-title{
+  font-size:1.5rem;font-weight:700;letter-spacing:.04em;margin-bottom:16px;
+  display:flex;align-items:center;gap:10px;
+}
+.section-title .emoji{font-size:1.4rem}
+.section-subtitle{color:var(--text2);font-size:.92rem;margin-bottom:16px;line-height:1.6}
+
+/* Cards */
+.card{
+  background:radial-gradient(circle at top left,rgba(15,23,42,.96),var(--bg));
+  border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;
+  position:relative;overflow:hidden;
+}
+.card::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(135deg,rgba(15,23,42,.7),transparent 60%);mix-blend-mode:soft-light;
+}
+.card>*{position:relative;z-index:1}
+.card h3{font-size:1.05rem;margin-bottom:8px;letter-spacing:.04em}
+.card p{color:var(--text2);font-size:.88rem}
+
+/* Callout */
+.callout{
+  border-left:4px solid var(--accent);padding:16px 20px;margin:20px 0;
+  background:radial-gradient(circle at top left,rgba(34,197,94,.06),rgba(15,23,42,.96));
+  border-radius:0 12px 12px 0;border:1px solid var(--border);border-left:4px solid var(--accent);
+}
+.callout.blue{border-left-color:var(--accent2)}
+.callout.pink{border-left-color:#ec4899}
+.callout p{color:var(--text2);font-size:.9rem;line-height:1.7}
+.callout strong{color:var(--text)}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+thead th{
+  text-align:left;padding:10px 14px;background:rgba(15,23,42,.85);color:var(--accent);
+  font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:.72rem;
+  border-bottom:2px solid rgba(31,41,55,.9);
+}
+tbody td{padding:10px 14px;border-bottom:1px solid rgba(31,41,55,.5)}
+tbody tr:hover{background:rgba(34,197,94,.04)}
+.center{text-align:center}
+
+/* Pill badges */
+.pill{
+  display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;
+  font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+}
+.pill.easy{background:rgba(34,197,94,.15);color:#bbf7d0;border:1px solid rgba(34,197,94,.4)}
+.pill.medium{background:rgba(245,158,11,.15);color:#fde68a;border:1px solid rgba(245,158,11,.4)}
+.pill.hard{background:rgba(249,115,115,.15);color:#fca5a5;border:1px solid rgba(249,115,115,.4)}
+
+/* Rank badge inline */
+.rank{font-size:1.3rem;vertical-align:middle}
+
+/* Module header */
+.module-header{
+  display:flex;align-items:center;gap:8px;margin:20px 0 8px;
+  font-size:.78rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);font-weight:700;
+}
+.module-header::after{content:"";flex:1;height:1px;background:rgba(34,197,94,.3)}
+
+/* Grid */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+@media(max-width:700px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+/* Theme cards */
+.theme-card{
+  padding:16px;border-radius:12px;border:1px solid var(--border);text-align:center;
+  position:relative;overflow:hidden;
+}
+.theme-card .theme-icon{font-size:2rem;margin-bottom:6px}
+.theme-card .theme-name{font-weight:700;font-size:.9rem;margin-bottom:4px}
+.theme-card .theme-desc{font-size:.78rem;color:var(--text2)}
+.theme-terminal{background:radial-gradient(circle,rgba(34,197,94,.1),rgba(2,6,23,.96))}
+.theme-midnight{background:radial-gradient(circle,rgba(99,102,241,.1),rgba(15,14,42,.96))}
+.theme-sunrise{background:radial-gradient(circle,rgba(234,88,12,.08),rgba(254,247,237,.96));color:#1c1917}
+.theme-sunrise .theme-desc{color:#78716c}
+.theme-synthwave{background:radial-gradient(circle,rgba(168,85,247,.12),rgba(26,5,51,.96))}
+.theme-paper{background:radial-gradient(circle,rgba(180,83,9,.05),rgba(245,241,235,.96));color:#2c2825}
+.theme-paper .theme-desc{color:#6b6560}
+
+/* Code block */
+.code-block{
+  background:var(--code-bg);border:1px solid var(--code-border);border-radius:10px;
+  padding:16px;font-family:var(--mono);font-size:.82rem;line-height:1.7;
+  overflow-x:auto;margin:12px 0;color:#bbf7d0;
+}
+
+/* Shortcut keys */
+.kbd{
+  display:inline-block;padding:3px 8px;background:rgba(15,23,42,.9);
+  border:1px solid rgba(148,163,184,.35);border-radius:6px;
+  font-family:var(--mono);font-size:.75rem;color:#e5e7eb;
+}
+
+/* Steps */
+.step{display:flex;gap:16px;margin:16px 0;align-items:flex-start}
+.step-num{
+  width:36px;height:36px;border-radius:999px;flex-shrink:0;
+  background:linear-gradient(135deg,#22c55e,#4ade80);color:#052e16;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;
+}
+.step-content h4{margin-bottom:4px;font-size:1rem}
+.step-content p{color:var(--text2);font-size:.88rem}
+
+/* Glossary */
+.glossary-term{color:var(--accent);font-weight:700;font-size:.88rem}
+.glossary-def{color:var(--text2);font-size:.85rem;padding-bottom:8px;border-bottom:1px solid rgba(31,41,55,.4);margin-bottom:8px}
+
+/* Puppeteer analogy */
+.analogy{
+  padding:24px;border-radius:12px;text-align:center;margin:20px 0;
+  background:radial-gradient(circle at top left,rgba(34,197,94,.1),rgba(15,23,42,.96)),
+    radial-gradient(circle at bottom right,rgba(59,130,246,.08),transparent);
+  border:1px solid rgba(34,197,94,.3);
+}
+.analogy .big-emoji{font-size:3rem;margin-bottom:12px}
+.analogy p{font-size:1rem;line-height:1.8;color:var(--text2);max-width:600px;margin:0 auto}
+.analogy strong{color:var(--text)}
+
+/* Footer */
+.footer{
+  text-align:center;padding:40px 0 20px;color:var(--text2);font-size:.82rem;
+  border-top:1px solid rgba(31,41,55,.5);margin-top:48px;
+}
+.footer .heart{color:#ec4899}
+
+/* Print friendly */
+@media print{
+  body{background:#fff;color:#111}
+  .card,.callout,.analogy,.theme-card{border-color:#ddd;background:#fafafa!important}
+  .card::before{display:none}
+  table th{background:#f0f0f0;color:#333}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="bismillah">بسم الله الرحمن الرحيم</div>
+  <div class="hero-logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-92.820084 179.975632 6.000000 3.214096" fill="currentColor">
+      <path d="M-90.26918,180.70665C-90.270096,180.703674,-90.280693,180.55484,-90.292725,180.3759C-90.304756,180.19696,-90.315605,180.042282,-90.316826,180.032166L-90.319046,180.013763L-90.29628,180.013763C-90.283752,180.013748,-90.25869,180.012115,-90.240585,180.010117C-90.222481,180.008118,-90.191841,180.005646,-90.172501,180.004608L-90.137344,180.002731L-90.128738,180.131226C-90.124008,180.201889,-90.119133,180.269699,-90.117897,180.281921L-90.115662,180.304123L-90.05497,180.20639C-90.021591,180.152634,-89.977379,180.08139,-89.956726,180.048065L-89.919182,179.987488L-89.883324,179.985062C-89.863602,179.983734,-89.824806,179.980759,-89.797112,179.978455C-89.769424,179.976166,-89.739342,179.974884,-89.73027,179.975632L-89.713783,179.976974L-89.825653,180.145996L-89.937531,180.315033L-89.796638,180.490601C-89.719147,180.587158,-89.655746,180.667526,-89.655746,180.669174C-89.655746,180.670837,-89.657356,180.672195,-89.659317,180.672195C-89.676155,180.672195,-89.856628,180.684464,-89.861404,180.685928C-89.865883,180.687317,-89.896164,180.651016,-89.971275,180.554199C-90.028305,180.480698,-90.076393,180.421448,-90.07814,180.422516C-90.079887,180.423599,-90.086746,180.433975,-90.093384,180.445587L-90.105461,180.466675L-90.097374,180.581726C-90.091408,180.66658,-90.090439,180.697479,-90.093674,180.699478C-90.099167,180.702866,-90.137032,180.7061,-90.21048,180.709442C-90.257515,180.711578,-90.267807,180.71109,-90.26918,180.70665z"/>
+      <path d="M-89.190971,180.7686C-89.267868,180.753281,-89.31105,180.739975,-89.360039,180.716522C-89.393906,180.700302,-89.471527,180.651245,-89.480576,180.640335C-89.484718,180.635345,-89.482971,180.627808,-89.446373,180.493073C-89.44014,180.470108,-89.428429,180.473007,-89.40416,180.50351C-89.35006,180.571503,-89.267303,180.622406,-89.189331,180.635666C-89.152946,180.641846,-89.149734,180.641846,-89.129295,180.635406C-89.09346,180.624115,-89.075447,180.597748,-89.081604,180.565582C-89.085762,180.543793,-89.121902,180.514221,-89.183189,180.482422C-89.254944,180.44519,-89.27681,180.430908,-89.309555,180.399933C-89.365524,180.347,-89.382957,180.291809,-89.367203,180.217453C-89.349838,180.135468,-89.298691,180.084976,-89.207352,180.059616C-89.16906,180.048981,-89.099213,180.048294,-89.053474,180.058105C-88.98037,180.073776,-88.906212,180.104935,-88.843803,180.14621C-88.810745,180.16806,-88.807495,180.171295,-88.809486,180.180176C-88.810699,180.185577,-88.820007,180.220505,-88.830177,180.257782C-88.847977,180.323044,-88.849014,180.325516,-88.858116,180.324509C-88.863312,180.323944,-88.870895,180.31871,-88.874962,180.312897C-88.886063,180.297012,-88.932678,180.252243,-88.951851,180.239044C-89.003326,180.203629,-89.07032,180.181305,-89.113388,180.185211C-89.166359,180.190018,-89.195839,180.22757,-89.177078,180.266357C-89.168106,180.284912,-89.14418,180.302139,-89.078835,180.337082C-88.97522,180.392517,-88.924667,180.434921,-88.900993,180.486298C-88.888092,180.514282,-88.885109,180.566086,-88.894295,180.602661C-88.921547,180.711212,-89.010704,180.773865,-89.135971,180.772491C-89.156639,180.772263,-89.181389,180.770508,-89.190971,180.7686z"/>
+      <path d="M-91.104111,180.90361C-91.134857,180.834915,-91.198944,180.691757,-91.246529,180.585495C-91.294121,180.479233,-91.332542,180.391785,-91.331917,180.391159C-91.330269,180.389511,-91.248558,180.352615,-91.135277,180.302368C-91.080956,180.278275,-91.021782,180.253952,-91.003784,180.248306C-90.923584,180.22316,-90.848717,180.234344,-90.799507,180.278824C-90.775833,180.300217,-90.757965,180.329971,-90.742996,180.372955C-90.732986,180.401703,-90.731194,180.412506,-90.731262,180.44368C-90.731339,180.474075,-90.733147,180.485123,-90.741638,180.507187C-90.753166,180.53714,-90.772163,180.572006,-90.780914,180.579269C-90.784096,180.581909,-90.786697,180.585449,-90.786697,180.587128C-90.786697,180.590454,-90.750763,180.609756,-90.581421,180.697388C-90.520706,180.72879,-90.466957,180.757034,-90.461975,180.760147C-90.4533,180.765549,-90.456924,180.767578,-90.547188,180.807983C-90.599037,180.831192,-90.645187,180.85022,-90.64975,180.850266C-90.654312,180.850327,-90.720131,180.816483,-90.796013,180.775055L-90.933975,180.699768L-90.960068,180.711792C-90.974419,180.718399,-90.986549,180.72406,-90.987015,180.72435C-90.987488,180.724655,-90.965302,180.775085,-90.937721,180.836411C-90.910133,180.897751,-90.887093,180.950424,-90.886513,180.953476C-90.885788,180.957291,-90.909706,180.96991,-90.96286,180.993774C-91.005432,181.012878,-91.042053,181.028519,-91.044235,181.028519C-91.046425,181.028519,-91.073364,180.972321,-91.104111,180.90361zM-90.99427,180.585632C-90.928116,180.554184,-90.903168,180.526901,-90.902977,180.485809C-90.902802,180.449066,-90.926598,180.406387,-90.953178,180.395752C-90.982254,180.384109,-91.00518,180.388504,-91.073784,180.418884C-91.095886,180.428665,-91.114441,180.437119,-91.115021,180.437668C-91.116417,180.439011,-91.04142,180.606354,-91.039421,180.606354C-91.038567,180.606354,-91.018242,180.597031,-90.99427,180.585632z"/>
+      <path d="M-89.823586,182.830811C-89.825005,182.829391,-89.826164,182.809341,-89.826164,182.78627L-89.826164,182.744308L-88.327271,182.744308L-86.828384,182.744324L-86.828384,182.788864L-86.828384,182.833405L-88.324692,182.833389C-89.147659,182.833389,-89.822166,182.83223,-89.823586,182.830811z"/>
+      <path d="M-90.825432,182.968948L-90.825432,182.926346L-88.826904,182.926346L-86.828384,182.926346L-86.828384,182.968964L-86.828384,183.011566L-88.826904,183.011551L-90.825432,183.011551L-90.825432,182.968948z"/>
+      <path d="M-92.820084,183.14711L-92.820084,183.104507L-89.824234,183.104507L-86.828384,183.104523L-86.828384,183.147125L-86.828384,183.189728L-89.824234,183.189713L-92.820084,183.189713L-92.820084,183.14711z"/>
+    </svg>
+  </div>
+  <h1>Puppeteer Playground</h1>
+  <div class="subtitle">Learn · Play · Demo — Browser Automation for Everyone!</div>
+  <div class="langs">
+    <span class="lang-chip">🇬🇧 English</span>
+    <span class="lang-chip">🇫🇷 Français</span>
+    <span class="lang-chip">🇸🇦 العربية</span>
+  </div>
+</div>
+
+<!-- WHAT IS THIS -->
+<div class="section">
+  <div class="section-title"><span class="emoji">🤔</span> What Is This?</div>
+  <div class="analogy">
+    <div class="big-emoji">🎭🤖🌐</div>
+    <p>Imagine you could teach your computer to use the internet <strong>all by itself</strong> — clicking buttons, filling forms, taking screenshots, and collecting information from websites... like a <strong>robot browsing the web</strong> for you!</p>
+    <p style="margin-top:12px"><strong>Puppeteer Playground</strong> is an interactive web app that helps you learn, practice, and explore this superpower — without installing anything!</p>
+  </div>
+</div>
+
+<!-- WHO IS THIS FOR -->
+<div class="section">
+  <div class="section-title"><span class="emoji">🎯</span> Who Is This For?</div>
+  <div class="grid-2">
+    <div class="card">
+      <h3>🧒 Kids & Beginners</h3>
+      <p>Learning what browser automation is and how it works — no experience needed!</p>
+    </div>
+    <div class="card">
+      <h3>🎓 Students</h3>
+      <p>Perfect for school projects, coding workshops, and presentations.</p>
+    </div>
+    <div class="card">
+      <h3>👩‍🏫 Teachers & Instructors</h3>
+      <p>Running interactive workshops with live demos and presentation mode.</p>
+    </div>
+    <div class="card">
+      <h3>💻 Junior Developers</h3>
+      <p>Getting hands-on practice with real Puppeteer APIs you can copy-paste.</p>
+    </div>
+  </div>
+</div>
+
+<!-- KIDS EXPLANATION -->
+<div class="section">
+  <div class="section-title"><span class="emoji">🧒</span> For Kids: What Is Puppeteer?</div>
+  <div class="callout">
+    <p>🎭 <strong>Puppeteer</strong> is like having a <strong>robot friend</strong> who can use a web browser for you.</p>
+    <p style="margin-top:10px">You write instructions (code), and the robot follows them exactly:</p>
+  </div>
+  <div class="grid-2" style="margin-top:12px">
+    <div class="card"><h3>➡️ "Go to this website"</h3><p>The robot opens Chrome and types the address</p></div>
+    <div class="card"><h3>👆 "Click this button"</h3><p>The robot finds the button and clicks it</p></div>
+    <div class="card"><h3>📸 "Take a picture"</h3><p>The robot takes a screenshot of the page</p></div>
+    <div class="card"><h3>💰 "Read me the prices"</h3><p>The robot reads the page and tells you</p></div>
+  </div>
+  <div class="callout" style="margin-top:16px;text-align:center">
+    <p>It's like teaching a marionette (puppet) to surf the web!<br>That's why it's called <strong>Puppeteer</strong> — which means <strong>puppet master</strong> 🎭</p>
+  </div>
+</div>
+
+<!-- THREE MODES -->
+<div class="section">
+  <div class="section-title"><span class="emoji">✨</span> Three Modes to Explore</div>
+  <div class="grid-3">
+    <div class="card" style="text-align:center">
+      <div style="font-size:2.5rem;margin-bottom:8px">📚</div>
+      <h3>Learn</h3>
+      <p>12 guided lessons across 4 modules with animated simulations</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <div style="font-size:2.5rem;margin-bottom:8px">🎮</div>
+      <h3>Play</h3>
+      <p>8 challenges with points, ranks, and achievement badges</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <div style="font-size:2.5rem;margin-bottom:8px">🧪</div>
+      <h3>Demo Lab</h3>
+      <p>Free playground with code editor and live browser simulation</p>
+    </div>
+  </div>
+</div>
+
+<!-- LEARN MODE DETAIL -->
+<div class="section">
+  <div class="section-title"><span class="emoji">📚</span> Learn Mode — 12 Lessons</div>
+
+  <div class="module-header">🧱 Module 1: Foundations</div>
+  <table>
+    <thead><tr><th>#</th><th>Lesson</th><th>What You'll Learn</th></tr></thead>
+    <tbody>
+      <tr><td class="center">1</td><td>🚀 Launch & Navigate</td><td>How to open a browser and go to a website</td></tr>
+      <tr><td class="center">2</td><td>📐 Viewport & Settings</td><td>Change the screen size and pretend to be a phone</td></tr>
+      <tr><td class="center">3</td><td>👆 Selectors & Clicking</td><td>Find things on a page and click them</td></tr>
+      <tr><td class="center">4</td><td>⌨️ Typing & Forms</td><td>Type into text boxes and fill out forms</td></tr>
+    </tbody>
+  </table>
+
+  <div class="module-header">📸 Module 2: Capture & Extract</div>
+  <table>
+    <thead><tr><th>#</th><th>Lesson</th><th>What You'll Learn</th></tr></thead>
+    <tbody>
+      <tr><td class="center">5</td><td>📷 Screenshots</td><td>Take pictures of web pages</td></tr>
+      <tr><td class="center">6</td><td>📄 PDF Generation</td><td>Turn web pages into PDF documents</td></tr>
+      <tr><td class="center">7</td><td>🕷️ Web Scraping Basics</td><td>Pull data out of websites automatically</td></tr>
+      <tr><td class="center">8</td><td>🔄 Advanced Scraping</td><td>Handle multiple pages and scrolling</td></tr>
+    </tbody>
+  </table>
+
+  <div class="module-header">🌐 Module 3: Network & Performance</div>
+  <table>
+    <thead><tr><th>#</th><th>Lesson</th><th>What You'll Learn</th></tr></thead>
+    <tbody>
+      <tr><td class="center">9</td><td>🚫 Network Interception</td><td>Block images or ads to make pages load faster</td></tr>
+      <tr><td class="center">10</td><td>📡 Monitoring Requests</td><td>Watch everything the browser downloads</td></tr>
+      <tr><td class="center">11</td><td>⚡ Performance & Tracing</td><td>Measure how fast a website loads</td></tr>
+    </tbody>
+  </table>
+
+  <div class="module-header">🛠️ Module 4: Real-World Patterns</div>
+  <table>
+    <thead><tr><th>#</th><th>Lesson</th><th>What You'll Learn</th></tr></thead>
+    <tbody>
+      <tr><td class="center">12</td><td>🛡️ Error Handling & Retries</td><td>What to do when things go wrong</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout" style="margin-top:16px">
+    <p><strong>Each lesson includes:</strong> ✅ Real Puppeteer code · ▶️ Animated simulation · 💡 Explanation · ❓ Quiz · 🎯 Line-by-line highlighting</p>
+  </div>
+</div>
+
+<!-- PLAY MODE -->
+<div class="section">
+  <div class="section-title"><span class="emoji">🎮</span> Play Mode — 8 Challenges</div>
+  <table>
+    <thead><tr><th>#</th><th>Challenge</th><th>Difficulty</th><th class="center">Points</th></tr></thead>
+    <tbody>
+      <tr><td class="center">1</td><td>📸 Navigate & Screenshot</td><td><span class="pill easy">Easy</span></td><td class="center">100</td></tr>
+      <tr><td class="center">2</td><td>🔍 Find the Page Title</td><td><span class="pill easy">Easy</span></td><td class="center">100</td></tr>
+      <tr><td class="center">3</td><td>🔐 Login Form Fill</td><td><span class="pill medium">Medium</span></td><td class="center">200</td></tr>
+      <tr><td class="center">4</td><td>💰 Extract Product Prices</td><td><span class="pill medium">Medium</span></td><td class="center">200</td></tr>
+      <tr><td class="center">5</td><td>🎯 Element Screenshot</td><td><span class="pill medium">Medium</span></td><td class="center">250</td></tr>
+      <tr><td class="center">6</td><td>🚫 Block All Images</td><td><span class="pill hard">Hard</span></td><td class="center">300</td></tr>
+      <tr><td class="center">7</td><td>📑 Paginated Scraping</td><td><span class="pill hard">Hard</span></td><td class="center">350</td></tr>
+      <tr><td class="center">8</td><td>🔁 Retry on Failure</td><td><span class="pill hard">Hard</span></td><td class="center">400</td></tr>
+    </tbody>
+  </table>
+
+  <div class="grid-3" style="margin-top:20px">
+    <div class="card" style="text-align:center">
+      <div style="font-size:2rem">🥉</div>
+      <h3>Beginner</h3>
+      <p>0 – 499 pts</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <div style="font-size:2rem">🥈</div>
+      <h3>Automator</h3>
+      <p>500 – 1,199 pts</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <div style="font-size:2rem">🥇</div>
+      <h3>Puppeteer Master</h3>
+      <p>1,200 – 1,900 pts</p>
+    </div>
+  </div>
+
+  <div class="section-subtitle" style="margin-top:16px"><strong>Achievement Badges:</strong> 🚀 First Run · 📚 Fast Learner · 🎓 Half Way · 🏆 Scholar · 🎮 Challenger · ⚡ Speed Demon · ⛏️ Data Miner · 👑 Puppeteer Master</div>
+</div>
+
+<!-- DEMO LAB -->
+<div class="section">
+  <div class="section-title"><span class="emoji">🧪</span> Demo Lab — 8 Templates</div>
+  <div class="grid-2">
+    <div class="card"><h3>📸 Screenshot</h3><p>Navigate to a URL + take a screenshot</p></div>
+    <div class="card"><h3>📝 Form Fill</h3><p>Fill a login form automatically</p></div>
+    <div class="card"><h3>🕷️ Scrape Data</h3><p>Extract product data from a page</p></div>
+    <div class="card"><h3>📄 Generate PDF</h3><p>Turn a page into a PDF document</p></div>
+    <div class="card"><h3>🚫 Block Images</h3><p>Speed up loading by blocking images</p></div>
+    <div class="card"><h3>⚡ Performance</h3><p>Measure page load speed and memory</p></div>
+    <div class="card"><h3>📱 Mobile Emulation</h3><p>Pretend to be an iPhone</p></div>
+    <div class="card"><h3>🔁 Retry Pattern</h3><p>Handle errors gracefully</p></div>
+  </div>
+  <div class="callout blue" style="margin-top:16px">
+    <p><strong>Demo Lab features:</strong> 📝 Code editor · 🖥️ Live browser simulation · 📊 Console, Screenshot, Data, Network & DOM tabs · ▶️ One-click Run</p>
+  </div>
+</div>
+
+<!-- THEMES -->
+<div class="section">
+  <div class="section-title"><span class="emoji">🎨</span> 5 Beautiful Themes</div>
+  <div class="grid-3" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
+    <div class="theme-card theme-terminal"><div class="theme-icon">🖥️</div><div class="theme-name">Terminal</div><div class="theme-desc">Hacker vibes</div></div>
+    <div class="theme-card theme-midnight"><div class="theme-icon">🌙</div><div class="theme-name">Midnight</div><div class="theme-desc">Elegant gold</div></div>
+    <div class="theme-card theme-sunrise"><div class="theme-icon">☀️</div><div class="theme-name">Sunrise</div><div class="theme-desc">Warm & bright</div></div>
+    <div class="theme-card theme-synthwave"><div class="theme-icon">💜</div><div class="theme-name">Synthwave</div><div class="theme-desc">Retro neon</div></div>
+    <div class="theme-card theme-paper"><div class="theme-icon">📄</div><div class="theme-name">Paper</div><div class="theme-desc">Clean academic</div></div>
+  </div>
+</div>
+
+<!-- LANGUAGES -->
+<div class="section">
+  <div class="section-title"><span class="emoji">🌍</span> 3 Languages (with RTL!)</div>
+  <table>
+    <thead><tr><th>Language</th><th class="center">Code</th><th class="center">Direction</th></tr></thead>
+    <tbody>
+      <tr><td>🇬🇧 English</td><td class="center"><code>en</code></td><td class="center">Left → Right</td></tr>
+      <tr><td>🇫🇷 Français</td><td class="center"><code>fr</code></td><td class="center">Left → Right</td></tr>
+      <tr><td>🇸🇦 العربية</td><td class="center"><code>ar</code></td><td class="center">Right ← Left</td></tr>
+    </tbody>
+  </table>
+  <div class="callout" style="margin-top:12px">
+    <p>Everything is translated: lessons, challenges, quizzes, buttons, explanations — the whole app! When you switch to Arabic, the <strong>entire layout flips</strong> to right-to-left. Pretty cool, right? 😎</p>
+  </div>
+</div>
+
+<!-- HOW TO USE -->
+<div class="section">
+  <div class="section-title"><span class="emoji">🚀</span> How to Use</div>
+  <div class="step"><div class="step-num">1</div><div class="step-content"><h4>Open the file</h4><p>Double-click <code>puppeteer-playground.html</code> — it opens in any browser (Chrome, Firefox, Edge, Safari)</p></div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content"><h4>Pick your language</h4><p>Use the dropdown in the top-right corner to switch between English, French, or Arabic</p></div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content"><h4>Choose a mode</h4><p>📚 <strong>Learn</strong> if you're new · 🎮 <strong>Play</strong> for challenges · 🧪 <strong>Demo Lab</strong> to experiment</p></div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content"><h4>Hit Run!</h4><p>Press the ▶ Run button (or <span class="kbd">Ctrl + Enter</span>) and watch the magic happen!</p></div></div>
+</div>
+
+<!-- KEYBOARD SHORTCUTS -->
+<div class="section">
+  <div class="section-title"><span class="emoji">⌨️</span> Keyboard Shortcuts</div>
+  <table>
+    <thead><tr><th>Shortcut</th><th>What It Does</th></tr></thead>
+    <tbody>
+      <tr><td><span class="kbd">Ctrl</span> + <span class="kbd">Enter</span></td><td>▶️ Run the current code</td></tr>
+      <tr><td><span class="kbd">←</span> <span class="kbd">→</span></td><td>Navigate between lessons</td></tr>
+      <tr><td><span class="kbd">F</span></td><td>Toggle fullscreen</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- EXTRA FEATURES -->
+<div class="section">
+  <div class="section-title"><span class="emoji">🛠️</span> Extra Features</div>
+  <div class="grid-2">
+    <div class="card"><h3>📋 Cheat Sheet</h3><p>Complete Puppeteer API reference — click the 📋 button anytime</p></div>
+    <div class="card"><h3>📽️ Presentation Mode</h3><p>Bigger fonts optimized for projectors — perfect for workshops</p></div>
+    <div class="card"><h3>🔤 Font Size Control</h3><p>A+ / A- buttons to adjust text size for comfort</p></div>
+    <div class="card"><h3>⛶ Fullscreen</h3><p>Distraction-free mode for live demos</p></div>
+  </div>
+</div>
+
+<!-- INSTRUCTOR TIPS -->
+<div class="section">
+  <div class="section-title"><span class="emoji">👩‍🏫</span> Tips for Workshop Instructors</div>
+  <div class="callout pink">
+    <p>1. <strong>Start with Terminal theme</strong> — looks impressive on projector</p>
+    <p>2. <strong>Use Presentation Mode</strong> — bigger fonts for everyone to see</p>
+    <p>3. <strong>Follow the modules in order</strong> — they build on each other</p>
+    <p>4. <strong>Let students try challenges</strong> after each module</p>
+    <p>5. <strong>Use Demo Lab</strong> for live coding — students can follow along</p>
+    <p>6. <strong>Switch to Arabic</strong> to show RTL — always gets a "wow!"</p>
+    <p>7. <strong>The Cheat Sheet</strong> is great for quick reference during exercises</p>
+  </div>
+</div>
+
+<!-- TECH DETAILS -->
+<div class="section">
+  <div class="section-title"><span class="emoji">⚙️</span> Technical Details</div>
+  <table>
+    <thead><tr><th>Feature</th><th>Details</th></tr></thead>
+    <tbody>
+      <tr><td>Type</td><td>Single HTML file — no build step, no dependencies</td></tr>
+      <tr><td>Size</td><td>~1,900 lines</td></tr>
+      <tr><td>Framework</td><td>Vanilla HTML + CSS + JavaScript</td></tr>
+      <tr><td>Browser Support</td><td>Chrome, Firefox, Edge, Safari (modern)</td></tr>
+      <tr><td>Responsive</td><td>Desktop, laptop, and tablet</td></tr>
+      <tr><td>Offline</td><td>Works completely offline after first load</td></tr>
+    </tbody>
+  </table>
+  <div class="callout blue" style="margin-top:16px">
+    <p><strong>How the simulation works:</strong> Since Puppeteer needs Node.js, this app <strong>simulates</strong> what Puppeteer does. You see real code (100% copy-paste ready), and the app animates the browser actions. When you're ready for real Puppeteer, the code works exactly the same!</p>
+  </div>
+</div>
+
+<!-- FILE STRUCTURE -->
+<div class="section">
+  <div class="section-title"><span class="emoji">📁</span> Project Files</div>
+  <div class="code-block">📂 Puppeteer Playground
+├── 📄 puppeteer-playground.html  ← The app (open this!)
+├── 📄 README.md                  ← Documentation (text)
+├── 📄 README.html                ← Documentation (pretty)
+├── 🎨 style.css                  ← Design system reference
+└── 🖼️ logo.svg                   ← Project logo</div>
+</div>
+
+<!-- GLOSSARY -->
+<div class="section">
+  <div class="section-title"><span class="emoji">📜</span> Glossary (Big Words Explained!)</div>
+  <div class="card">
+    <div class="glossary-term">API</div><div class="glossary-def">A set of commands you can use to talk to a program</div>
+    <div class="glossary-term">Automation</div><div class="glossary-def">Making a computer do something by itself</div>
+    <div class="glossary-term">Browser</div><div class="glossary-def">An app that shows websites (like Chrome or Firefox)</div>
+    <div class="glossary-term">CSS Selector</div><div class="glossary-def">A way to point at something on a web page (like #my-button)</div>
+    <div class="glossary-term">DOM</div><div class="glossary-def">The "skeleton" of a web page — all the pieces organized in a tree</div>
+    <div class="glossary-term">Headless</div><div class="glossary-def">Running a browser invisibly (no window shown)</div>
+    <div class="glossary-term">JavaScript</div><div class="glossary-def">The programming language that makes websites interactive</div>
+    <div class="glossary-term">Node.js</div><div class="glossary-def">A tool that lets you run JavaScript outside a browser</div>
+    <div class="glossary-term">PDF</div><div class="glossary-def">A document format that looks the same everywhere you open it</div>
+    <div class="glossary-term">Puppeteer</div><div class="glossary-def">A JavaScript library that controls Chrome automatically</div>
+    <div class="glossary-term">RTL</div><div class="glossary-def">Right-to-Left — how Arabic and Hebrew text flows</div>
+    <div class="glossary-term">Screenshot</div><div class="glossary-def">A picture of what's on the screen</div>
+    <div class="glossary-term">Scraping</div><div class="glossary-def">Automatically collecting data from web pages</div>
+    <div class="glossary-term">Viewport</div><div class="glossary-def">The visible area of a web page in the browser window</div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div style="font-size:2rem;margin-bottom:8px">🎭</div>
+  <p><strong>Happy Learning!</strong></p>
+  <p style="margin-top:6px">Made with <span class="heart">❤️</span> for workshops everywhere</p>
+  <p style="margin-top:4px">Open <code>puppeteer-playground.html</code> and start exploring!</p>
+</div>
+
+</div>
+</body>
+</html>
