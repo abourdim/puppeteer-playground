@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Puppeteer Playground</title>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Noto+Kufi+Arabic:wght@400;600;700&family=Amiri&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#020617;--bg2:#020617;--bg3:#0f172a;--card:rgba(15,23,42,0.96);--border:rgba(148,163,184,0.28);
+  --text:#f9fafb;--text2:#9ca3af;--accent:#22c55e;--accent2:#3b82f6;
+  --accent-soft:rgba(34,197,94,0.15);--accent-strong:rgba(34,197,94,0.7);
+  --danger:#f97373;--warn:#f59e0b;--success:#22c55e;
+  --code-bg:rgba(15,23,42,0.98);--code-border:rgba(31,41,55,0.95);
+  --font:system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
+  --mono:"SF Mono",ui-monospace,Menlo,Monaco,Consolas,"Fira Code","Liberation Mono",monospace;
+  --radius:12px;--shadow:0 24px 60px rgba(15,23,42,0.85);
+  --transition:.25s cubic-bezier(.4,0,.2,1);
+}
+[data-theme="midnight"]{
+  --bg:#0f0e2a;--bg2:#0f0e2a;--bg3:#1a1844;--card:rgba(30,27,80,0.96);--border:rgba(99,102,241,0.3);
+  --accent:#fbbf24;--accent2:#818cf8;--accent-soft:rgba(251,191,36,0.15);--accent-strong:rgba(251,191,36,0.7);
+  --code-bg:rgba(18,16,58,0.98);--code-border:rgba(46,43,110,0.9);
+}
+[data-theme="sunrise"]{
+  --bg:#fef7ed;--bg2:#fff7ed;--bg3:#ffedd5;--card:rgba(255,255,255,0.96);--border:rgba(253,186,116,0.5);
+  --text:#1c1917;--text2:#78716c;--accent:#ea580c;--accent2:#dc2626;
+  --accent-soft:rgba(234,88,12,0.12);--accent-strong:rgba(234,88,12,0.7);
+  --code-bg:rgba(255,251,235,0.98);--code-border:rgba(253,230,138,0.7);--shadow:0 4px 24px rgba(0,0,0,.08);
+}
+[data-theme="synthwave"]{
+  --bg:#1a0533;--bg2:#1a0533;--bg3:#2d0a5e;--card:rgba(38,8,69,0.96);--border:rgba(109,40,217,0.4);
+  --accent:#f472b6;--accent2:#a78bfa;--accent-soft:rgba(244,114,182,0.15);--accent-strong:rgba(244,114,182,0.7);
+  --code-bg:rgba(30,6,64,0.98);--code-border:rgba(91,33,182,0.7);
+}
+[data-theme="paper"]{
+  --bg:#f5f1eb;--bg2:#ece8e1;--bg3:#e2ddd5;--card:rgba(255,255,255,0.96);--border:rgba(214,211,205,0.7);
+  --text:#2c2825;--text2:#6b6560;--accent:#b45309;--accent2:#0369a1;
+  --accent-soft:rgba(180,83,9,0.1);--accent-strong:rgba(180,83,9,0.6);
+  --code-bg:rgba(250,248,245,0.98);--code-border:rgba(214,211,205,0.7);--shadow:0 2px 12px rgba(0,0,0,.06);
+}
+[dir="rtl"]{direction:rtl;text-align:right}
+[dir="rtl"] .code-block{direction:ltr;text-align:left}
+[dir="rtl"] .mono{direction:ltr;text-align:left}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font);
+  min-height:100vh;overflow-x:hidden;transition:background var(--transition),color var(--transition);
+  background:
+    radial-gradient(circle at top left, rgba(34,197,94,0.18), transparent 50%),
+    radial-gradient(circle at bottom right, rgba(59,130,246,0.2), transparent 55%),
+    var(--bg);
+  background-attachment:fixed;
+  color:var(--text);
+}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:rgba(15,23,42,0.5);border-radius:3px}
+::-webkit-scrollbar-thumb{background:rgba(148,163,184,0.5);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(148,163,184,0.7)}
+a{color:var(--accent);text-decoration:none}
+button{
+  font-family:var(--font);cursor:pointer;border:none;outline:none;
+  transition:all var(--transition);border-radius:999px;
+}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;padding:10px 20px;
+  background:linear-gradient(135deg,#22c55e,#4ade80);color:#052e16;font-weight:600;
+  border-radius:999px;font-size:.85rem;
+  border:1px solid rgba(34,197,94,0.9);
+  box-shadow:0 12px 30px rgba(22,163,74,0.35),0 0 0 1px rgba(15,23,42,0.95);
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(22,163,74,0.5),0 0 0 1px rgba(59,130,246,0.5)}
+.btn-outline{
+  background:rgba(15,23,42,0.9);border:1px solid rgba(148,163,184,0.5);color:#e5e7eb;
+  box-shadow:none;
+}
+.btn-outline:hover{background:var(--accent);color:#052e16;border-color:var(--accent)}
+.btn-sm{padding:6px 14px;font-size:.78rem}
+.btn-danger{background:linear-gradient(135deg,#ef4444,#f97373);color:#fff;border-color:rgba(239,68,68,0.7)}
+.btn-danger:hover{box-shadow:0 4px 16px rgba(239,68,68,.3)}
+
+/* ─── HEADER ─── */
+.header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 24px;
+  background:
+    radial-gradient(circle at top left, rgba(34,197,94,0.12), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(59,130,246,0.18), transparent 60%),
+    var(--bg);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);
+  flex-wrap:wrap;gap:8px;
+}
+.logo{display:flex;align-items:center;gap:12px;font-weight:700;font-size:1.15rem}
+.logo-icon{display:flex;align-items:center}
+.logo-icon svg{width:56px;height:30px}
+.logo-title{
+  font-size:1.15rem;letter-spacing:0.08em;text-transform:uppercase;font-weight:700;
+  background:linear-gradient(135deg,#10b981,#3b82f6,#a855f7,#ec4899,#10b981);
+  background-size:300% 300%;
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  animation:gradientShift 6s ease infinite;
+}
+.logo-subtitle{font-size:0.72rem;color:#9ca3af;letter-spacing:0.08em;margin-top:1px}
+@keyframes gradientShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.header-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.header-controls select,.header-controls button{
+  padding:6px 12px;background:rgba(15,23,42,0.9);color:#e5e7eb;
+  border:1px solid rgba(148,163,184,0.4);border-radius:999px;font-size:.78rem;font-family:var(--font);
+}
+.header-controls select:focus{border-color:var(--accent)}
+.score-badge{
+  display:inline-flex;align-items:center;gap:6px;padding:4px 12px;
+  border-radius:999px;border:1px solid rgba(34,197,94,0.6);
+  background:radial-gradient(circle at top left,rgba(34,197,94,0.25),transparent 60%),rgba(15,23,42,0.9);
+  font-size:.75rem;color:#bbf7d0;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;
+  box-shadow:0 0 0 1px rgba(30,64,175,0.3),0 0 16px rgba(34,197,94,0.4);
+}
+
+/* ─── NAV ─── */
+.nav{
+  display:flex;gap:4px;padding:8px 24px;background:rgba(2,6,23,0.8);
+  border-bottom:1px solid var(--border);overflow-x:auto;backdrop-filter:blur(12px);
+}
+.nav-btn{
+  padding:8px 18px;border-radius:999px;font-size:.82rem;font-weight:600;
+  background:transparent;color:var(--text2);white-space:nowrap;
+  border:1px solid transparent;
+}
+.nav-btn.active{
+  background:linear-gradient(135deg,#22c55e,#4ade80);color:#052e16;
+  border-color:rgba(34,197,94,0.9);box-shadow:0 0 16px rgba(34,197,94,0.3);
+}
+.nav-btn:hover:not(.active){background:rgba(15,23,42,0.9);color:var(--text);border-color:rgba(148,163,184,0.3)}
+
+/* ─── PAGES ─── */
+.page{display:none;padding:24px;max-width:1400px;margin:0 auto;animation:fadeIn .4s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── HOME ─── */
+.hero{text-align:center;padding:60px 20px 40px}
+.hero h1{
+  font-size:2.8rem;margin-bottom:8px;letter-spacing:0.06em;text-transform:uppercase;
+  background:linear-gradient(135deg,#10b981,#3b82f6,#a855f7,#ec4899,#10b981);
+  background-size:300% 300%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:gradientShift 6s ease infinite;
+}
+.hero p{color:var(--text2);font-size:1.1rem;margin-bottom:30px;letter-spacing:0.04em}
+.hero-modes{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.mode-card{
+  flex:1;min-width:220px;max-width:320px;padding:28px;
+  background:radial-gradient(circle at top left,rgba(15,23,42,0.96),var(--bg));
+  border:1px solid var(--border);border-radius:var(--radius);text-align:center;
+  cursor:pointer;transition:all var(--transition);position:relative;overflow:hidden;
+}
+.mode-card::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(135deg,rgba(15,23,42,0.7),transparent 60%);mix-blend-mode:soft-light;
+}
+.mode-card:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:0 0 0 1px var(--accent-strong),var(--shadow)}
+.mode-card .icon{font-size:2.5rem;margin-bottom:12px;position:relative;z-index:1}
+.mode-card h3{margin-bottom:6px;font-size:1.05rem;position:relative;z-index:1;letter-spacing:0.06em;text-transform:uppercase}
+.mode-card p{color:var(--text2);font-size:.82rem;position:relative;z-index:1}
+.features-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:16px;padding:30px 0;
+}
+.feature-item{
+  padding:20px;background:radial-gradient(circle at top left,rgba(15,23,42,0.96),var(--bg));
+  border:1px solid var(--border);border-radius:var(--radius);position:relative;overflow:hidden;
+}
+.feature-item::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(135deg,rgba(15,23,42,0.7),transparent 60%);mix-blend-mode:soft-light;
+}
+.feature-item .fi-icon{font-size:1.5rem;margin-bottom:8px;position:relative;z-index:1}
+.feature-item h4{margin-bottom:4px;font-size:.9rem;position:relative;z-index:1;letter-spacing:0.04em}
+.feature-item p{color:var(--text2);font-size:.8rem;position:relative;z-index:1}
+.kbd{
+  display:inline-block;padding:2px 7px;background:rgba(15,23,42,0.9);border:1px solid rgba(148,163,184,0.35);
+  border-radius:4px;font-family:var(--mono);font-size:.72rem;
+}
+
+/* ─── LEARN ─── */
+.learn-layout{display:grid;grid-template-columns:260px 1fr;gap:20px;min-height:70vh}
+@media(max-width:900px){.learn-layout{grid-template-columns:1fr}}
+.lesson-sidebar{
+  background:radial-gradient(circle at top left,rgba(15,23,42,0.96),var(--bg));
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px;overflow-y:auto;max-height:80vh;position:relative;overflow-x:hidden;
+}
+.module-title{
+  font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;
+  color:var(--accent);margin:16px 0 6px;font-weight:700;
+}
+.module-title:first-child{margin-top:0}
+.lesson-item{
+  display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;
+  cursor:pointer;font-size:.82rem;color:var(--text2);margin:2px 0;
+  border:1px solid transparent;
+}
+.lesson-item:hover{background:rgba(15,23,42,0.9);color:var(--text);border-color:rgba(148,163,184,0.2)}
+.lesson-item.active{
+  background:linear-gradient(135deg,#22c55e,#4ade80);color:#052e16;font-weight:600;
+  border-color:rgba(34,197,94,0.9);box-shadow:0 0 12px rgba(34,197,94,0.3);
+}
+.lesson-item.completed{color:var(--success)}
+.lesson-item .li-num{
+  width:22px;height:22px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:.7rem;font-weight:700;background:var(--bg3);
+  color:var(--text2);flex-shrink:0;
+}
+.lesson-item.active .li-num{background:var(--bg);color:var(--accent)}
+.lesson-item.completed .li-num{background:var(--success);color:#fff}
+.lesson-content{display:flex;flex-direction:column;gap:16px}
+.lesson-header{
+  padding:20px;background:radial-gradient(circle at top left,rgba(15,23,42,0.96),var(--bg));
+  border:1px solid var(--border);border-radius:var(--radius);position:relative;overflow:hidden;
+}
+.lesson-header::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(130deg,rgba(34,197,94,0.08),transparent 60%),radial-gradient(circle at 20% 10%,rgba(56,189,248,0.15),transparent 50%);
+  opacity:0.5;mix-blend-mode:soft-light;
+}
+.lesson-header h2{font-size:1.3rem;margin-bottom:6px;position:relative;z-index:1;letter-spacing:0.04em;text-transform:uppercase}
+.lesson-header p{color:var(--text2);font-size:.88rem;position:relative;z-index:1}
+.progress-track{
+  height:4px;background:rgba(15,23,42,0.9);border-radius:2px;margin-top:12px;overflow:hidden;
+  position:relative;z-index:1;border:1px solid rgba(31,41,55,0.5);
+}
+.progress-fill{height:100%;background:linear-gradient(90deg,#22c55e,#4ade80);border-radius:2px;transition:width .5s ease;box-shadow:0 0 8px rgba(34,197,94,0.5)}
+.split-view{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:1000px){.split-view{grid-template-columns:1fr}}
+
+/* ─── CODE BLOCK ─── */
+.code-panel{
+  background:var(--code-bg);border:1px solid var(--code-border);border-radius:var(--radius);
+  overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,0.3);
+}
+.code-panel-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px;background:rgba(15,23,42,0.85);border-bottom:1px solid var(--code-border);
+  font-size:.72rem;color:var(--text2);letter-spacing:0.06em;text-transform:uppercase;
+}
+.code-panel-header .dots{display:flex;gap:6px}
+.code-panel-header .dot{width:10px;height:10px;border-radius:50%}
+.code-panel-header .dot.r{background:#ef4444}.dot.y{background:#f59e0b}.dot.g{background:#22c55e}
+.code-body{
+  padding:14px;font-family:var(--mono);font-size:.82rem;line-height:1.7;
+  overflow-x:auto;white-space:pre;counter-reset:line;max-height:400px;overflow-y:auto;
+}
+.code-line{
+  display:block;padding:1px 8px 1px 40px;position:relative;border-radius:3px;
+  transition:background .3s;
+}
+.code-line::before{
+  content:counter(line);counter-increment:line;position:absolute;left:8px;
+  color:var(--text2);opacity:.4;font-size:.72rem;width:24px;text-align:right;
+}
+.code-line.executing{background:rgba(34,197,94,.12);border-left:3px solid var(--accent)}
+.code-line .kw{color:#c084fc}.code-line .str{color:#86efac}
+.code-line .fn{color:#67e8f9}.code-line .cm{color:#6b7280;font-style:italic}
+.code-line .num{color:#fbbf24}.code-line .op{color:#f472b6}
+
+/* ─── BROWSER SIMULATOR ─── */
+.browser-sim{
+  background:radial-gradient(circle at top left,rgba(15,23,42,0.96),var(--bg));
+  border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;
+}
+.browser-chrome{
+  display:flex;align-items:center;gap:8px;padding:8px 12px;
+  background:rgba(15,23,42,0.85);border-bottom:1px solid rgba(31,41,55,0.9);
+}
+.browser-chrome .dots{display:flex;gap:5px}
+.browser-chrome .bdot{width:11px;height:11px;border-radius:50%}
+.browser-chrome .bdot.r{background:#ef4444;box-shadow:0 0 4px rgba(239,68,68,0.5)}
+.bdot.y{background:#f59e0b;box-shadow:0 0 4px rgba(245,158,11,0.5)}
+.bdot.g{background:#22c55e;box-shadow:0 0 4px rgba(34,197,94,0.5)}
+.browser-nav{display:flex;gap:4px;margin-left:4px}
+.browser-nav button{
+  width:24px;height:24px;border-radius:999px;background:rgba(15,23,42,0.9);
+  color:var(--text2);font-size:.7rem;border:1px solid rgba(31,41,55,0.9);
+  display:flex;align-items:center;justify-content:center;
+}
+.address-bar{
+  flex:1;padding:5px 12px;background:rgba(15,23,42,0.95);border:1px solid rgba(31,41,55,0.9);
+  border-radius:999px;color:var(--text2);font-size:.75rem;font-family:var(--mono);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.browser-body{
+  min-height:300px;padding:20px;position:relative;overflow:hidden;
+  transition:all .5s ease;
+}
+.browser-loading{
+  position:absolute;top:0;left:0;height:3px;background:linear-gradient(90deg,#22c55e,#4ade80);
+  animation:loadBar 1s ease forwards;z-index:5;box-shadow:0 0 8px rgba(34,197,94,0.6);
+}
+@keyframes loadBar{from{width:0}to{width:100%}}
+.browser-body.loading{opacity:.5}
+.sim-page{font-family:var(--font);color:var(--text)}
+.sim-highlight{
+  outline:3px dashed #22c55e;outline-offset:3px;
+  animation:pulseHL 1s ease infinite;border-radius:4px;
+}
+@keyframes pulseHL{0%,100%{outline-color:#22c55e}50%{outline-color:transparent}}
+.typing-cursor{
+  display:inline-block;width:2px;height:1em;background:#22c55e;
+  animation:blink .5s step-end infinite;vertical-align:text-bottom;margin-left:1px;
+}
+@keyframes blink{50%{opacity:0}}
+
+/* ─── CONSOLE ─── */
+.console-panel{
+  background:var(--code-bg);border:1px solid var(--code-border);border-radius:var(--radius);
+  overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,0.3);
+}
+.console-header{
+  padding:8px 14px;background:rgba(15,23,42,0.85);border-bottom:1px solid var(--code-border);
+  font-size:.72rem;color:var(--text2);display:flex;justify-content:space-between;
+  letter-spacing:0.06em;text-transform:uppercase;
+}
+.console-body{
+  padding:10px 14px;font-family:var(--mono);font-size:.78rem;line-height:1.6;
+  max-height:200px;overflow-y:auto;
+}
+.console-line{padding:2px 0;animation:fadeIn .3s ease}
+.console-line.info{color:#9ca3af}
+.console-line.success{color:#bbf7d0}
+.console-line.warn{color:#fde68a}
+.console-line.error{color:#f97373}
+.console-line .timestamp{color:var(--text2);opacity:.5;margin-right:8px;font-size:.7rem}
+
+/* ─── OUTPUT TABS ─── */
+.output-tabs{display:flex;gap:2px;margin-bottom:-1px;position:relative;z-index:2}
+.output-tab{
+  padding:8px 16px;font-size:.78rem;font-weight:600;background:rgba(15,23,42,0.85);
+  color:var(--text2);border:1px solid var(--border);border-bottom:none;
+  border-radius:999px 999px 0 0;cursor:pointer;letter-spacing:0.05em;text-transform:uppercase;
+}
+.output-tab.active{background:var(--card);color:var(--accent);border-color:var(--accent-strong)}
+.output-content{
+  background:radial-gradient(circle at top left,rgba(15,23,42,0.96),var(--bg));
+  border:1px solid var(--border);border-radius:0 var(--radius) var(--radius) var(--radius);
+  padding:16px;min-height:200px;
+}
+.data-table{width:100%;border-collapse:collapse;font-size:.8rem}
+.data-table th{
+  text-align:left;padding:8px 12px;background:rgba(15,23,42,0.85);color:var(--accent);
+  font-weight:600;border-bottom:2px solid rgba(31,41,55,0.9);letter-spacing:0.06em;text-transform:uppercase;font-size:.72rem;
+}
+[dir="rtl"] .data-table th{text-align:right}
+.data-table td{padding:8px 12px;border-bottom:1px solid rgba(31,41,55,0.6)}
+
+/* ─── EXPLANATION PANEL ─── */
+.explain-panel{
+  padding:16px;background:radial-gradient(circle at top left,rgba(15,23,42,0.96),var(--bg));
+  border:1px solid var(--border);border-radius:var(--radius);
+  border-left:4px solid var(--accent);position:relative;overflow:hidden;
+}
+.explain-panel::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(135deg,rgba(34,197,94,0.06),transparent 60%);
+}
+[dir="rtl"] .explain-panel{border-left:none;border-right:4px solid var(--accent)}
+.explain-panel h4{margin-bottom:8px;color:var(--accent);position:relative;z-index:1}
+.explain-panel p{color:var(--text2);font-size:.86rem;line-height:1.6;position:relative;z-index:1}
+
+/* ─── QUIZ ─── */
+.quiz-panel{
+  padding:16px;background:radial-gradient(circle at top left,rgba(15,23,42,0.96),var(--bg));
+  border:1px solid var(--border);border-radius:var(--radius);
+}
+.quiz-panel h4{margin-bottom:12px;letter-spacing:0.04em}
+.quiz-option{
+  display:block;width:100%;text-align:left;padding:10px 14px;margin:4px 0;
+  background:rgba(15,23,42,0.9);border:1px solid rgba(148,163,184,0.35);border-radius:999px;
+  color:var(--text);font-size:.82rem;
+}
+[dir="rtl"] .quiz-option{text-align:right}
+.quiz-option:hover{border-color:rgba(34,197,94,0.5);background:rgba(15,23,42,0.95)}
+.quiz-option.correct{border-color:rgba(34,197,94,0.8);background:rgba(34,197,94,.1);box-shadow:0 0 8px rgba(34,197,94,0.15)}
+.quiz-option.wrong{border-color:rgba(249,115,115,0.7);background:rgba(249,115,115,.1)}
+.quiz-result{margin-top:10px;padding:8px 14px;border-radius:999px;font-weight:600;font-size:.82rem}
+.quiz-result.pass{background:rgba(34,197,94,.15);color:#bbf7d0;border:1px solid rgba(34,197,94,0.4)}
+.quiz-result.fail{background:rgba(249,115,115,.15);color:#fca5a5;border:1px solid rgba(249,115,115,0.4)}
+
+/* ─── PLAY / CHALLENGES ─── */
+.challenges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.challenge-card{
+  padding:20px;background:radial-gradient(circle at top left,rgba(15,23,42,0.96),var(--bg));
+  border:1px solid var(--border);border-radius:var(--radius);
+  cursor:pointer;transition:all var(--transition);position:relative;overflow:hidden;
+}
+.challenge-card::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(135deg,rgba(15,23,42,0.7),transparent 60%);mix-blend-mode:soft-light;
+}
+.challenge-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 0 16px rgba(34,197,94,0.2)}
+.challenge-card.completed-card{border-color:var(--success);box-shadow:0 0 12px rgba(34,197,94,0.15)}
+.challenge-card.completed-card::after{
+  content:'✓';position:absolute;top:12px;right:12px;width:28px;height:28px;
+  background:var(--success);color:#fff;border-radius:50%;display:flex;
+  align-items:center;justify-content:center;font-weight:700;font-size:.8rem;
+}
+[dir="rtl"] .challenge-card.completed-card::after{right:auto;left:12px}
+.challenge-diff{
+  display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:.68rem;
+  font-weight:700;text-transform:uppercase;letter-spacing:.08em;position:relative;z-index:1;
+}
+.challenge-diff.easy{background:rgba(34,197,94,.15);color:#bbf7d0;border:1px solid rgba(34,197,94,0.4)}
+.challenge-diff.medium{background:rgba(245,158,11,.15);color:#fde68a;border:1px solid rgba(245,158,11,0.4)}
+.challenge-diff.hard{background:rgba(249,115,115,.15);color:#fca5a5;border:1px solid rgba(249,115,115,0.4)}
+.challenge-pts{color:var(--accent);font-weight:700;font-size:.85rem;margin-top:8px}
+.rank-display{
+  text-align:center;padding:24px;
+  background:radial-gradient(circle at top left,rgba(15,23,42,0.96),var(--bg));
+  border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;
+  position:relative;overflow:hidden;
+}
+.rank-display::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(130deg,rgba(34,197,94,0.08),transparent 60%),radial-gradient(circle at 20% 10%,rgba(56,189,248,0.15),transparent 50%);
+  opacity:0.5;
+}
+.rank-display .rank-icon{font-size:3rem;position:relative;z-index:1}
+.rank-display .rank-name{font-size:1.3rem;font-weight:700;margin:8px 0;position:relative;z-index:1;letter-spacing:0.06em;text-transform:uppercase}
+.rank-display .rank-score{color:var(--accent);font-size:1.6rem;font-weight:700;position:relative;z-index:1}
+
+/* ─── BADGES ─── */
+.badges-row{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+.badge{
+  display:inline-flex;align-items:center;gap:6px;padding:6px 14px;
+  background:rgba(15,23,42,0.9);border:1px solid rgba(148,163,184,0.35);border-radius:999px;
+  font-size:.75rem;color:var(--text2);letter-spacing:0.04em;
+}
+.badge.earned{border-color:rgba(34,197,94,0.8);color:#bbf7d0;background:radial-gradient(circle at top left,rgba(34,197,94,0.2),rgba(15,23,42,0.9));box-shadow:0 0 12px rgba(34,197,94,0.2)}
+.badge .badge-icon{font-size:1rem}
+
+/* ─── DEMO LAB ─── */
+.demo-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;min-height:70vh}
+@media(max-width:1000px){.demo-layout{grid-template-columns:1fr}}
+.template-picker{
+  display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;
+}
+.template-btn{
+  padding:5px 12px;background:rgba(15,23,42,0.9);border:1px solid rgba(148,163,184,0.35);
+  border-radius:999px;color:var(--text2);font-size:.75rem;letter-spacing:0.04em;
+}
+.template-btn:hover,.template-btn.active{border-color:rgba(34,197,94,0.8);color:#bbf7d0;box-shadow:0 0 8px rgba(34,197,94,0.15)}
+.code-editor{
+  width:100%;min-height:300px;padding:14px;background:var(--code-bg);
+  border:1px solid var(--code-border);border-radius:var(--radius);
+  font-family:var(--mono);font-size:.8rem;color:var(--text);line-height:1.7;
+  resize:vertical;outline:none;box-shadow:inset 0 1px 3px rgba(0,0,0,0.3);
+}
+.code-editor:focus{border-color:rgba(34,197,94,0.6);box-shadow:inset 0 1px 3px rgba(0,0,0,0.3),0 0 0 1px rgba(34,197,94,0.3)}
+
+/* ─── CHEAT SHEET ─── */
+.cheat-sheet{
+  background:radial-gradient(circle at top left,rgba(15,23,42,0.96),var(--bg));
+  border:1px solid var(--border);border-radius:var(--radius);padding:20px;
+}
+.cheat-section{margin-bottom:20px}
+.cheat-section h4{color:var(--accent);margin-bottom:8px;font-size:.85rem;letter-spacing:0.06em;text-transform:uppercase}
+.cheat-item{
+  display:flex;gap:12px;padding:6px 0;border-bottom:1px solid rgba(31,41,55,0.6);
+  font-size:.8rem;
+}
+.cheat-item code{
+  font-family:var(--mono);background:var(--code-bg);padding:2px 8px;
+  border-radius:999px;color:var(--accent2);white-space:nowrap;border:1px solid var(--code-border);
+  font-size:.75rem;
+}
+.cheat-item span{color:var(--text2);flex:1}
+
+/* ─── NETWORK WATERFALL ─── */
+.waterfall{display:flex;flex-direction:column;gap:4px;padding:10px 0}
+.wf-row{display:flex;align-items:center;gap:8px;font-size:.75rem}
+.wf-label{width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text2)}
+.wf-bar-track{flex:1;height:16px;background:rgba(15,23,42,0.9);border-radius:3px;overflow:hidden;position:relative;border:1px solid rgba(31,41,55,0.6)}
+.wf-bar{
+  height:100%;border-radius:3px;animation:wfGrow .8s ease forwards;
+  position:absolute;left:0;top:0;
+}
+.wf-bar.doc{background:var(--accent2)}.wf-bar.css{background:#a78bfa}
+.wf-bar.js{background:#fbbf24}.wf-bar.img{background:var(--success)}
+.wf-bar.blocked{background:var(--danger);opacity:.4}
+.wf-time{width:50px;text-align:right;color:var(--text2);font-family:var(--mono)}
+@keyframes wfGrow{from{width:0}}
+
+/* ─── DOM TREE ─── */
+.dom-tree{font-family:var(--mono);font-size:.78rem;line-height:1.8;padding:10px}
+.dom-node{padding-left:20px}
+[dir="rtl"] .dom-node{padding-left:0;padding-right:20px}
+.dom-tag{color:var(--accent2)}.dom-attr{color:var(--warn)}.dom-text{color:var(--text2)}
+.dom-node.highlight .dom-tag{color:var(--accent);font-weight:700}
+
+/* ─── ONBOARDING OVERLAY ─── */
+.onboarding-overlay{
+  position:fixed;inset:0;background:rgba(2,6,23,.85);z-index:200;
+  display:flex;align-items:center;justify-content:center;animation:fadeIn .3s ease;
+  backdrop-filter:blur(8px);
+}
+.onboarding-card{
+  background:radial-gradient(circle at top left,rgba(15,23,42,0.98),#020617);
+  border:1px solid rgba(34,197,94,0.5);border-radius:16px;
+  padding:32px;max-width:500px;width:90%;text-align:center;
+  box-shadow:0 0 0 1px rgba(30,64,175,0.3),0 0 40px rgba(34,197,94,0.15),var(--shadow);
+}
+.onboarding-card h2{margin-bottom:12px;color:#bbf7d0;letter-spacing:0.06em}
+.onboarding-card p{color:var(--text2);margin-bottom:20px;line-height:1.6}
+.onboarding-steps{display:flex;justify-content:center;gap:8px;margin-bottom:16px}
+.ob-dot{width:10px;height:10px;border-radius:50%;background:rgba(31,41,55,0.9);border:1px solid rgba(148,163,184,0.3)}
+.ob-dot.active{background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,0.6)}
+
+/* ─── FULLSCREEN ─── */
+.fullscreen-btn{
+  position:fixed;bottom:20px;right:20px;width:40px;height:40px;
+  border-radius:999px;background:rgba(15,23,42,0.9);border:1px solid rgba(148,163,184,0.35);
+  color:var(--text);font-size:1.1rem;display:flex;align-items:center;
+  justify-content:center;z-index:90;
+}
+[dir="rtl"] .fullscreen-btn{right:auto;left:20px}
+.fullscreen-btn:hover{background:var(--accent);color:#052e16;box-shadow:0 0 16px rgba(34,197,94,0.4)}
+
+/* ─── FONT SIZE CONTROL ─── */
+.font-ctrl{display:flex;align-items:center;gap:4px}
+.font-ctrl button{
+  width:26px;height:26px;border-radius:999px;background:rgba(15,23,42,0.9);
+  color:var(--text);font-size:.8rem;border:1px solid rgba(148,163,184,0.35);
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* ─── BISMILLAH ─── */
+.bismillah{
+  position:absolute;top:4px;inset-inline:0;display:flex;justify-content:center;
+  font-family:"Amiri",serif;font-size:11px;opacity:0.25;
+  color:rgba(200,230,255,0.9);pointer-events:none;z-index:101;
+}
+
+/* ─── UTILITIES ─── */
+.hidden{display:none!important}
+.mt-12{margin-top:12px}.mt-20{margin-top:20px}.mb-12{margin-bottom:12px}
+.flex{display:flex}.gap-8{gap:8px}.gap-16{gap:16px}.flex-wrap{flex-wrap:wrap}
+.items-center{align-items:center}.justify-between{justify-content:space-between}
+.text-center{text-align:center}.text-accent{color:var(--accent)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:700px){.grid-2{grid-template-columns:1fr}}
+
+/* ─── PRESENTATION MODE ─── */
+body.presentation .header{font-size:1.1rem}
+body.presentation .code-body{font-size:1rem}
+body.presentation .browser-body{font-size:1.05rem}
+body.presentation .lesson-header h2{font-size:2rem}
+body.presentation .explain-panel{font-size:1.05rem}
+</style>
+</head>
+<body data-theme="terminal">
+
+<!-- HEADER -->
+<header class="header" id="header">
+  <div class="bismillah">بسم الله الرحمن الرحيم</div>
+  <div class="logo">
+    <span class="logo-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-92.820084 179.975632 6.000000 3.214096" fill="currentColor" style="color:#22c55e">
+      <path d="M-90.26918,180.70665C-90.270096,180.703674,-90.280693,180.55484,-90.292725,180.3759C-90.304756,180.19696,-90.315605,180.042282,-90.316826,180.032166L-90.319046,180.013763L-90.29628,180.013763C-90.283752,180.013748,-90.25869,180.012115,-90.240585,180.010117C-90.222481,180.008118,-90.191841,180.005646,-90.172501,180.004608L-90.137344,180.002731L-90.128738,180.131226C-90.124008,180.201889,-90.119133,180.269699,-90.117897,180.281921L-90.115662,180.304123L-90.05497,180.20639C-90.021591,180.152634,-89.977379,180.08139,-89.956726,180.048065L-89.919182,179.987488L-89.883324,179.985062C-89.863602,179.983734,-89.824806,179.980759,-89.797112,179.978455C-89.769424,179.976166,-89.739342,179.974884,-89.73027,179.975632L-89.713783,179.976974L-89.825653,180.145996L-89.937531,180.315033L-89.796638,180.490601C-89.719147,180.587158,-89.655746,180.667526,-89.655746,180.669174C-89.655746,180.670837,-89.657356,180.672195,-89.659317,180.672195C-89.676155,180.672195,-89.856628,180.684464,-89.861404,180.685928C-89.865883,180.687317,-89.896164,180.651016,-89.971275,180.554199C-90.028305,180.480698,-90.076393,180.421448,-90.07814,180.422516C-90.079887,180.423599,-90.086746,180.433975,-90.093384,180.445587L-90.105461,180.466675L-90.097374,180.581726C-90.091408,180.66658,-90.090439,180.697479,-90.093674,180.699478C-90.099167,180.702866,-90.137032,180.7061,-90.21048,180.709442C-90.257515,180.711578,-90.267807,180.71109,-90.26918,180.70665z"/>
+      <path d="M-89.190971,180.7686C-89.267868,180.753281,-89.31105,180.739975,-89.360039,180.716522C-89.393906,180.700302,-89.471527,180.651245,-89.480576,180.640335C-89.484718,180.635345,-89.482971,180.627808,-89.446373,180.493073C-89.44014,180.470108,-89.428429,180.473007,-89.40416,180.50351C-89.35006,180.571503,-89.267303,180.622406,-89.189331,180.635666C-89.152946,180.641846,-89.149734,180.641846,-89.129295,180.635406C-89.09346,180.624115,-89.075447,180.597748,-89.081604,180.565582C-89.085762,180.543793,-89.121902,180.514221,-89.183189,180.482422C-89.254944,180.44519,-89.27681,180.430908,-89.309555,180.399933C-89.365524,180.347,-89.382957,180.291809,-89.367203,180.217453C-89.349838,180.135468,-89.298691,180.084976,-89.207352,180.059616C-89.16906,180.048981,-89.099213,180.048294,-89.053474,180.058105C-88.98037,180.073776,-88.906212,180.104935,-88.843803,180.14621C-88.810745,180.16806,-88.807495,180.171295,-88.809486,180.180176C-88.810699,180.185577,-88.820007,180.220505,-88.830177,180.257782C-88.847977,180.323044,-88.849014,180.325516,-88.858116,180.324509C-88.863312,180.323944,-88.870895,180.31871,-88.874962,180.312897C-88.886063,180.297012,-88.932678,180.252243,-88.951851,180.239044C-89.003326,180.203629,-89.07032,180.181305,-89.113388,180.185211C-89.166359,180.190018,-89.195839,180.22757,-89.177078,180.266357C-89.168106,180.284912,-89.14418,180.302139,-89.078835,180.337082C-88.97522,180.392517,-88.924667,180.434921,-88.900993,180.486298C-88.888092,180.514282,-88.885109,180.566086,-88.894295,180.602661C-88.921547,180.711212,-89.010704,180.773865,-89.135971,180.772491C-89.156639,180.772263,-89.181389,180.770508,-89.190971,180.7686z"/>
+      <path d="M-91.104111,180.90361C-91.134857,180.834915,-91.198944,180.691757,-91.246529,180.585495C-91.294121,180.479233,-91.332542,180.391785,-91.331917,180.391159C-91.330269,180.389511,-91.248558,180.352615,-91.135277,180.302368C-91.080956,180.278275,-91.021782,180.253952,-91.003784,180.248306C-90.923584,180.22316,-90.848717,180.234344,-90.799507,180.278824C-90.775833,180.300217,-90.757965,180.329971,-90.742996,180.372955C-90.732986,180.401703,-90.731194,180.412506,-90.731262,180.44368C-90.731339,180.474075,-90.733147,180.485123,-90.741638,180.507187C-90.753166,180.53714,-90.772163,180.572006,-90.780914,180.579269C-90.784096,180.581909,-90.786697,180.585449,-90.786697,180.587128C-90.786697,180.590454,-90.750763,180.609756,-90.581421,180.697388C-90.520706,180.72879,-90.466957,180.757034,-90.461975,180.760147C-90.4533,180.765549,-90.456924,180.767578,-90.547188,180.807983C-90.599037,180.831192,-90.645187,180.85022,-90.64975,180.850266C-90.654312,180.850327,-90.720131,180.816483,-90.796013,180.775055L-90.933975,180.699768L-90.960068,180.711792C-90.974419,180.718399,-90.986549,180.72406,-90.987015,180.72435C-90.987488,180.724655,-90.965302,180.775085,-90.937721,180.836411C-90.910133,180.897751,-90.887093,180.950424,-90.886513,180.953476C-90.885788,180.957291,-90.909706,180.96991,-90.96286,180.993774C-91.005432,181.012878,-91.042053,181.028519,-91.044235,181.028519C-91.046425,181.028519,-91.073364,180.972321,-91.104111,180.90361zM-90.99427,180.585632C-90.928116,180.554184,-90.903168,180.526901,-90.902977,180.485809C-90.902802,180.449066,-90.926598,180.406387,-90.953178,180.395752C-90.982254,180.384109,-91.00518,180.388504,-91.073784,180.418884C-91.095886,180.428665,-91.114441,180.437119,-91.115021,180.437668C-91.116417,180.439011,-91.04142,180.606354,-91.039421,180.606354C-91.038567,180.606354,-91.018242,180.597031,-90.99427,180.585632z"/>
+      <path d="M-88.328873,181.18129C-88.367035,181.1548,-88.399017,181.132355,-88.399948,181.131424C-88.400887,181.130493,-88.36216,181.072723,-88.313889,181.003052C-88.265625,180.933365,-88.227539,180.875137,-88.229256,180.873642C-88.232262,180.871017,-88.36467,180.779251,-88.401207,180.754456L-88.418991,180.742401L-88.505783,180.867996C-88.55352,180.937073,-88.594093,180.993607,-88.59594,180.993622C-88.59967,180.993668,-88.741692,180.896652,-88.741692,180.894058C-88.741692,180.892731,-88.562958,180.634018,-88.382385,180.373978C-88.362411,180.345215,-88.344566,180.321136,-88.342712,180.320465C-88.340332,180.319611,-88.229614,180.393921,-88.196304,180.418747C-88.195633,180.41925,-88.226578,180.465042,-88.265076,180.520508C-88.303574,180.575974,-88.335899,180.623642,-88.336906,180.62645C-88.338058,180.629654,-88.30468,180.655014,-88.246178,180.695328C-88.195274,180.730423,-88.152,180.759674,-88.150009,180.76033C-88.148026,180.761002,-88.11441,180.715302,-88.075317,180.658768C-88.036224,180.602249,-88.002808,180.556,-88.00106,180.556C-87.996506,180.556,-87.856689,180.652924,-87.856689,180.656067C-87.856689,180.66153,-88.251923,181.229736,-88.255615,181.229599C-88.257751,181.229523,-88.29071,181.207779,-88.328873,181.18129z"/>
+      <path d="M-91.754158,181.531448C-91.888771,181.512161,-92.043076,181.366882,-92.082649,181.222183C-92.093285,181.183273,-92.092499,181.109177,-92.081032,181.069366C-92.049042,180.958313,-91.935387,180.846329,-91.824692,180.816788C-91.785378,180.806305,-91.704155,180.807419,-91.663956,180.818985C-91.603546,180.836395,-91.54142,180.875549,-91.484215,180.932281C-91.430611,180.985458,-91.394707,181.040161,-91.374954,181.098755C-91.364899,181.128601,-91.362389,181.143066,-91.360794,181.18042C-91.358604,181.231888,-91.362877,181.260315,-91.379135,181.302338C-91.403221,181.364624,-91.466469,181.439941,-91.530434,181.482498C-91.598885,181.528046,-91.669739,181.543549,-91.754158,181.531448zM-91.605019,181.363525C-91.545914,181.336853,-91.511971,181.268951,-91.52636,181.206177C-91.548233,181.110733,-91.662498,180.996597,-91.760284,180.972504C-91.805176,180.961456,-91.846542,180.972488,-91.884094,181.005539C-91.904282,181.023315,-91.923706,181.059692,-91.92746,181.086777C-91.935303,181.143326,-91.900101,181.216187,-91.832245,181.283859C-91.751648,181.364258,-91.670021,181.392868,-91.605019,181.363525z"/>
+      <path d="M-90.370827,181.625046C-90.382538,181.620316,-90.390862,181.606598,-90.416695,181.549454C-90.474388,181.421844,-90.474808,181.421082,-90.488495,181.41835C-90.495407,181.416962,-90.549316,181.415833,-90.608307,181.415833L-90.715553,181.415833L-90.723869,181.430634C-90.735786,181.451828,-90.771561,181.484283,-90.794991,181.495132C-90.860039,181.525269,-90.93119,181.512695,-90.977165,181.462952C-90.988503,181.450684,-91.003014,181.430267,-91.009399,181.417587C-91.019745,181.397064,-91.021019,181.390701,-91.021019,181.35968C-91.021019,181.328476,-91.019714,181.322067,-91.008591,181.298569C-90.99292,181.265488,-90.965279,181.238113,-90.930862,181.221588C-90.907669,181.210464,-90.901016,181.209076,-90.869965,181.208862C-90.80793,181.208435,-90.764534,181.22995,-90.732475,181.277023L-90.715042,181.302612L-90.575615,181.304077C-90.436188,181.305527,-90.43618,181.305542,-90.416817,181.31517C-90.398369,181.324356,-90.3964,181.32692,-90.375305,181.369354C-90.363121,181.39386,-90.334541,181.455734,-90.31179,181.506851C-90.28904,181.557983,-90.267876,181.603714,-90.264763,181.60849C-90.253143,181.626328,-90.259285,181.628876,-90.313087,181.628616C-90.340317,181.628479,-90.366295,181.626862,-90.370827,181.625046z"/>
+      <path d="M-89.823586,182.830811C-89.825005,182.829391,-89.826164,182.809341,-89.826164,182.78627L-89.826164,182.744308L-88.327271,182.744308L-86.828384,182.744324L-86.828384,182.788864L-86.828384,182.833405L-88.324692,182.833389C-89.147659,182.833389,-89.822166,182.83223,-89.823586,182.830811z"/>
+      <path d="M-90.825432,182.968948L-90.825432,182.926346L-88.826904,182.926346L-86.828384,182.926346L-86.828384,182.968964L-86.828384,183.011566L-88.826904,183.011551L-90.825432,183.011551L-90.825432,182.968948z"/>
+      <path d="M-92.820084,183.14711L-92.820084,183.104507L-89.824234,183.104507L-86.828384,183.104523L-86.828384,183.147125L-86.828384,183.189728L-89.824234,183.189713L-92.820084,183.189713L-92.820084,183.14711z"/>
+    </svg></span>
+    <div>
+      <div class="logo-title" id="hdr-title">Puppeteer Playground</div>
+      <div class="logo-subtitle">Learn · Play · Demo</div>
+    </div>
+  </div>
+  <div class="header-controls">
+    <div class="score-badge" id="score-display">⭐ <span id="total-score">0</span></div>
+    <div class="font-ctrl">
+      <button onclick="changeFontSize(-1)" title="Smaller">A-</button>
+      <button onclick="changeFontSize(1)" title="Larger">A+</button>
+    </div>
+    <select id="lang-select" onchange="setLang(this.value)">
+      <option value="en">English</option>
+      <option value="fr">Français</option>
+      <option value="ar">العربية</option>
+    </select>
+    <select id="theme-select" onchange="setTheme(this.value)">
+      <option value="terminal">🖥 Terminal</option>
+      <option value="midnight">🌙 Midnight</option>
+      <option value="sunrise">☀️ Sunrise</option>
+      <option value="synthwave">💜 Synthwave</option>
+      <option value="paper">📄 Paper</option>
+    </select>
+    <button class="btn-sm btn-outline" onclick="togglePresentation()" id="pres-btn" title="Presentation Mode">📽</button>
+    <button class="btn-sm btn-outline" onclick="showCheatSheet()" id="cheat-btn">📋</button>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav class="nav" id="main-nav">
+  <button class="nav-btn active" onclick="showPage('home')" data-i18n="home">Home</button>
+  <button class="nav-btn" onclick="showPage('learn')" data-i18n="learn">Learn</button>
+  <button class="nav-btn" onclick="showPage('play')" data-i18n="play">Play</button>
+  <button class="nav-btn" onclick="showPage('demo')" data-i18n="demo">Demo Lab</button>
+</nav>
+
+<!-- ═══════════ HOME ═══════════ -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <h1 id="hero-title">Puppeteer Playground</h1>
+    <p id="hero-tagline">Master browser automation — interactively.</p>
+    <div class="hero-modes">
+      <div class="mode-card" onclick="showPage('learn')">
+        <div class="icon">📚</div>
+        <h3 data-i18n="learn">Learn</h3>
+        <p id="home-learn-desc">12 guided lessons across 4 modules</p>
+      </div>
+      <div class="mode-card" onclick="showPage('play')">
+        <div class="icon">🎮</div>
+        <h3 data-i18n="play">Play</h3>
+        <p id="home-play-desc">8 challenges with points & badges</p>
+      </div>
+      <div class="mode-card" onclick="showPage('demo')">
+        <div class="icon">🧪</div>
+        <h3 data-i18n="demo">Demo Lab</h3>
+        <p id="home-demo-desc">Free playground with live simulation</p>
+      </div>
+    </div>
+  </div>
+  <div class="features-grid" id="features-grid"></div>
+  <div class="text-center mt-20">
+    <p style="color:var(--text2);font-size:.85rem" id="shortcut-hint">
+      Keyboard shortcuts: <span class="kbd">Ctrl+Enter</span> Run &nbsp; <span class="kbd">←→</span> Navigate Lessons &nbsp; <span class="kbd">F</span> Fullscreen
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════ LEARN ═══════════ -->
+<div class="page" id="page-learn">
+  <div class="learn-layout">
+    <div class="lesson-sidebar" id="lesson-sidebar"></div>
+    <div class="lesson-content" id="lesson-content"></div>
+  </div>
+</div>
+
+<!-- ═══════════ PLAY ═══════════ -->
+<div class="page" id="page-play">
+  <div id="play-overview">
+    <div class="rank-display" id="rank-display"></div>
+    <div class="badges-row" id="badges-row"></div>
+    <div class="challenges-grid" id="challenges-grid"></div>
+  </div>
+  <div id="challenge-active" class="hidden"></div>
+</div>
+
+<!-- ═══════════ DEMO LAB ═══════════ -->
+<div class="page" id="page-demo">
+  <div class="demo-layout">
+    <div>
+      <p style="color:var(--text2);font-size:.85rem;margin-bottom:8px" data-i18n="pickTemplate">Pick a template or write your own code:</p>
+      <div class="template-picker" id="template-picker"></div>
+      <textarea class="code-editor" id="demo-editor" spellcheck="false"></textarea>
+      <div class="flex gap-8 mt-12">
+        <button class="btn" onclick="runDemo()" id="demo-run-btn">▶ Run</button>
+        <button class="btn btn-outline" onclick="resetDemo()" data-i18n="reset">Reset</button>
+      </div>
+      <div class="mt-12" id="demo-console">
+        <div class="console-panel">
+          <div class="console-header"><span>Console</span><button class="btn-sm" onclick="clearDemoConsole()" style="background:transparent;color:var(--text2)">Clear</button></div>
+          <div class="console-body" id="demo-console-body"></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="browser-sim" id="demo-browser">
+        <div class="browser-chrome">
+          <div class="dots"><span class="bdot r"></span><span class="bdot y"></span><span class="bdot g"></span></div>
+          <div class="browser-nav"><button>◀</button><button>▶</button><button>↻</button></div>
+          <div class="address-bar" id="demo-address">about:blank</div>
+        </div>
+        <div class="browser-body" id="demo-browser-body">
+          <div style="color:var(--text2);text-align:center;padding:60px 20px">
+            <div style="font-size:2rem;margin-bottom:8px">🎭</div>
+            <span data-i18n="livePreview">Live Browser Preview</span>
+          </div>
+        </div>
+      </div>
+      <div class="mt-12">
+        <div class="output-tabs" id="demo-output-tabs">
+          <button class="output-tab active" onclick="switchDemoTab('screenshot')" data-i18n="screenshot">Screenshot</button>
+          <button class="output-tab" onclick="switchDemoTab('data')" data-i18n="data">Data</button>
+          <button class="output-tab" onclick="switchDemoTab('network')">Network</button>
+          <button class="output-tab" onclick="switchDemoTab('dom')">DOM</button>
+        </div>
+        <div class="output-content" id="demo-output-content">
+          <div style="color:var(--text2);text-align:center;padding:40px" data-i18n="run">▶ Run</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHEAT SHEET MODAL -->
+<div class="onboarding-overlay hidden" id="cheat-modal" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="onboarding-card" style="max-width:650px;text-align:left;max-height:80vh;overflow-y:auto">
+    <h2>📋 Puppeteer Cheat Sheet</h2>
+    <div id="cheat-content"></div>
+    <button class="btn mt-12" onclick="document.getElementById('cheat-modal').classList.add('hidden')">Close</button>
+  </div>
+</div>
+
+<!-- ONBOARDING -->
+<div class="onboarding-overlay" id="onboarding">
+  <div class="onboarding-card">
+    <div style="font-size:3rem;margin-bottom:12px">🎭</div>
+    <h2 id="ob-title">Welcome to Puppeteer Playground!</h2>
+    <p id="ob-text">Learn browser automation interactively with guided lessons, fun challenges, and a free-play demo lab. Available in English, French, and Arabic.</p>
+    <div class="onboarding-steps"><span class="ob-dot active"></span><span class="ob-dot"></span><span class="ob-dot"></span></div>
+    <button class="btn" onclick="advanceOnboarding()" id="ob-btn">Next</button>
+  </div>
+</div>
+
+<!-- FULLSCREEN BTN -->
+<button class="fullscreen-btn" onclick="toggleFullscreen()" title="Fullscreen (F)">⛶</button>
+
+<script>
+// ═══════════════════════════════════════════
+// DATA & i18n
+// ═══════════════════════════════════════════
+let currentLang = 'en';
+let currentTheme = 'terminal';
+let currentPage = 'home';
+let currentLesson = 0;
+let totalScore = 0;
+let completedLessons = new Set();
+let completedChallenges = new Set();
+let earnedBadges = new Set();
+let fontSize = 0;
+let isPresentation = false;
+let obStep = 0;
+let demoRunning = false;
+let demoTab = 'screenshot';
+
+const i18n = {
+  en: {
+    title:"Puppeteer Playground",subtitle:"Learn · Play · Demo",
+    tagline:"Master browser automation — interactively.",
+    home:"Home",learn:"Learn",play:"Play",demo:"Demo Lab",
+    run:"▶ Run",running:"⏳ Running...",reset:"Reset",
+    next:"Next →",prev:"← Prev",back:"← Back",
+    check:"Check Answer",hint:"Show Hint",
+    correct:"✓ Correct!",incorrect:"✗ Try again",
+    score:"Score",lesson:"Lesson",challenge:"Challenge",
+    output:"Output",console:"Console",screenshot:"Screenshot",
+    data:"Data",whatHappened:"💡 What happened?",
+    tryIt:"Try it yourself",pickTemplate:"Pick a template or write your own code:",
+    livePreview:"Live Browser Preview",steps:"Steps",description:"Description",
+    easy:"Easy",medium:"Medium",hard:"Hard",points:"pts",
+    completed:"Completed!",allDone:"🎉 All challenges completed!",
+    totalScore:"Total Score",startOver:"Start Over",
+    obWelcome:"Welcome to Puppeteer Playground!",
+    obText1:"Learn browser automation interactively with guided lessons, fun challenges, and a free-play demo lab. Available in English, French, and Arabic.",
+    obText2:"📚 Learn — 12 step-by-step lessons\n🎮 Play — 8 challenges with points & badges\n🧪 Demo Lab — free playground with live simulation",
+    obText3:"Pick a theme, choose your language, and start exploring! Press Ctrl+Enter to run code anytime.",
+    obStart:"Let's Go!",obNext:"Next",
+    mod1:"Foundations",mod2:"Capture & Extract",mod3:"Network & Performance",mod4:"Real-World Patterns",
+    featureLearn:"12 guided lessons across 4 progressive modules",
+    featurePlay:"8 challenges from easy to hard with scoring",
+    featureLang:"Full support for English, French & Arabic (RTL)",
+    featureTheme:"5 visual themes to match your style",
+    featureKeys:"Keyboard shortcuts for fast navigation",
+    featurePresent:"Presentation mode for live workshops",
+    shortcutHint:"Keyboard shortcuts:",shortcutRun:"Run",shortcutNav:"Navigate Lessons",shortcutFs:"Fullscreen",
+    rank0:"Beginner",rank1:"Automator",rank2:"Puppeteer Master",
+    quizQ:"Quick Quiz",
+    cheatTitle:"Puppeteer Cheat Sheet",
+    homeLearnDesc:"12 guided lessons across 4 modules",
+    homePlayDesc:"8 challenges with points & badges",
+    homeDemoDesc:"Free playground with live simulation",
+  },
+  fr: {
+    title:"Puppeteer Playground",subtitle:"Apprendre · Jouer · Démontrer",
+    tagline:"Maîtrisez l'automatisation du navigateur — en pratique.",
+    home:"Accueil",learn:"Apprendre",play:"Jouer",demo:"Labo Démo",
+    run:"▶ Exécuter",running:"⏳ Exécution...",reset:"Réinitialiser",
+    next:"Suivant →",prev:"← Précédent",back:"← Retour",
+    check:"Vérifier",hint:"Indice",
+    correct:"✓ Correct !",incorrect:"✗ Réessayez",
+    score:"Score",lesson:"Leçon",challenge:"Défi",
+    output:"Sortie",console:"Console",screenshot:"Capture",
+    data:"Données",whatHappened:"💡 Que s'est-il passé ?",
+    tryIt:"Essayez vous-même",pickTemplate:"Choisissez un modèle ou écrivez votre code :",
+    livePreview:"Aperçu Navigateur",steps:"Étapes",description:"Description",
+    easy:"Facile",medium:"Moyen",hard:"Difficile",points:"pts",
+    completed:"Terminé !",allDone:"🎉 Tous les défis terminés !",
+    totalScore:"Score Total",startOver:"Recommencer",
+    obWelcome:"Bienvenue dans Puppeteer Playground !",
+    obText1:"Apprenez l'automatisation du navigateur avec des leçons guidées, des défis amusants et un laboratoire de démonstration. Disponible en anglais, français et arabe.",
+    obText2:"📚 Apprendre — 12 leçons pas à pas\n🎮 Jouer — 8 défis avec points et badges\n🧪 Labo Démo — aire de jeu avec simulation en direct",
+    obText3:"Choisissez un thème, votre langue, et commencez à explorer ! Ctrl+Entrée pour exécuter le code.",
+    obStart:"C'est parti !",obNext:"Suivant",
+    mod1:"Fondamentaux",mod2:"Capture & Extraction",mod3:"Réseau & Performance",mod4:"Cas Pratiques",
+    featureLearn:"12 leçons guidées en 4 modules progressifs",
+    featurePlay:"8 défis de facile à difficile avec score",
+    featureLang:"Support complet anglais, français et arabe (RTL)",
+    featureTheme:"5 thèmes visuels selon votre style",
+    featureKeys:"Raccourcis clavier pour naviguer rapidement",
+    featurePresent:"Mode présentation pour les ateliers",
+    shortcutHint:"Raccourcis clavier :",shortcutRun:"Exécuter",shortcutNav:"Naviguer",shortcutFs:"Plein écran",
+    rank0:"Débutant",rank1:"Automatiseur",rank2:"Maître Puppeteer",
+    quizQ:"Quiz Rapide",
+    cheatTitle:"Aide-mémoire Puppeteer",
+    homeLearnDesc:"12 leçons guidées en 4 modules",
+    homePlayDesc:"8 défis avec points et badges",
+    homeDemoDesc:"Aire de jeu avec simulation en direct",
+  },
+  ar: {
+    title:"ساحة Puppeteer",subtitle:"تعلّم · العب · جرّب",
+    tagline:"أتقن أتمتة المتصفح — بشكل تفاعلي.",
+    home:"الرئيسية",learn:"تعلّم",play:"العب",demo:"معمل التجربة",
+    run:"▶ تشغيل",running:"⏳ جارٍ التشغيل...",reset:"إعادة تعيين",
+    next:"التالي →",prev:"← السابق",back:"← رجوع",
+    check:"تحقّق",hint:"تلميح",
+    correct:"✓ صحيح!",incorrect:"✗ حاول مجدداً",
+    score:"النقاط",lesson:"الدرس",challenge:"التحدي",
+    output:"المخرجات",console:"وحدة التحكم",screenshot:"لقطة شاشة",
+    data:"البيانات",whatHappened:"💡 ماذا حدث؟",
+    tryIt:"جرّب بنفسك",pickTemplate:"اختر قالباً أو اكتب كودك:",
+    livePreview:"معاينة المتصفح المباشرة",steps:"الخطوات",description:"الوصف",
+    easy:"سهل",medium:"متوسط",hard:"صعب",points:"نقاط",
+    completed:"مكتمل!",allDone:"🎉 جميع التحديات مكتملة!",
+    totalScore:"مجموع النقاط",startOver:"ابدأ من جديد",
+    obWelcome:"!Puppeteer Playground مرحباً في",
+    obText1:"تعلّم أتمتة المتصفح بشكل تفاعلي مع دروس موجّهة وتحديات ممتعة ومعمل تجربة حر. متوفر بالإنجليزية والفرنسية والعربية.",
+    obText2:"📚 تعلّم — 12 درساً خطوة بخطوة\n🎮 العب — 8 تحديات بنقاط وأوسمة\n🧪 معمل التجربة — ساحة حرة مع محاكاة مباشرة",
+    obText3:"اختر سمة، اختر لغتك، وابدأ الاستكشاف! اضغط Ctrl+Enter لتشغيل الكود في أي وقت.",
+    obStart:"!هيا بنا",obNext:"التالي",
+    mod1:"الأساسيات",mod2:"الالتقاط والاستخراج",mod3:"الشبكة والأداء",mod4:"أنماط واقعية",
+    featureLearn:"12 درساً موجّهاً في 4 وحدات تدريجية",
+    featurePlay:"8 تحديات من سهل إلى صعب مع تسجيل النقاط",
+    featureLang:"دعم كامل للإنجليزية والفرنسية والعربية",
+    featureTheme:"5 سمات بصرية تناسب أسلوبك",
+    featureKeys:"اختصارات لوحة المفاتيح للتنقل السريع",
+    featurePresent:"وضع العرض للورش التقديمية",
+    shortcutHint:"اختصارات لوحة المفاتيح:",shortcutRun:"تشغيل",shortcutNav:"تنقل",shortcutFs:"شاشة كاملة",
+    rank0:"مبتدئ",rank1:"مُؤتمِت",rank2:"محترف Puppeteer",
+    quizQ:"اختبار سريع",
+    cheatTitle:"ورقة مرجعية Puppeteer",
+    homeLearnDesc:"12 درساً في 4 وحدات",
+    homePlayDesc:"8 تحديات بنقاط وأوسمة",
+    homeDemoDesc:"ساحة حرة مع محاكاة مباشرة",
+  }
+};
+
+// ═══════════════════════════════════════════
+// LESSONS DATA (12 lessons)
+// ═══════════════════════════════════════════
+const lessons = [
+  // MODULE 1: Foundations
+  { module:0, id:'launch',
+    en:{title:'Launch & Navigate',obj:'Learn how to launch a browser and navigate to a URL.',
+      explain:'puppeteer.launch() starts a Chromium instance. browser.newPage() opens a new tab. page.goto() navigates to a URL. Setting headless:false shows the browser window visually.',
+      quiz:{q:'What does headless:false do?',opts:['Hides the browser','Shows the browser window','Makes it faster','Disables JavaScript'],ans:1}},
+    fr:{title:'Lancer & Naviguer',obj:'Apprenez à lancer un navigateur et naviguer vers une URL.',
+      explain:'puppeteer.launch() démarre une instance Chromium. browser.newPage() ouvre un onglet. page.goto() navigue vers une URL. headless:false affiche la fenêtre du navigateur.',
+      quiz:{q:'Que fait headless:false ?',opts:['Cache le navigateur','Affiche la fenêtre','Accélère','Désactive JavaScript'],ans:1}},
+    ar:{title:'الإطلاق والتنقل',obj:'تعلّم كيفية إطلاق متصفح والتنقل إلى عنوان URL.',
+      explain:'puppeteer.launch() يبدأ نسخة Chromium. browser.newPage() يفتح تبويباً. page.goto() ينتقل إلى URL. headless:false يُظهر نافذة المتصفح.',
+      quiz:{q:'ماذا يفعل headless:false؟',opts:['يخفي المتصفح','يُظهر النافذة','يُسرّع','يُعطّل JavaScript'],ans:1}},
+    code:`const puppeteer = require('puppeteer');\n\n(async () => {\n  // Launch browser (visible)\n  const browser = await puppeteer.launch({\n    headless: false\n  });\n  \n  // Open new tab\n  const page = await browser.newPage();\n  \n  // Navigate to URL\n  await page.goto('https://example.com');\n  \n  // Close browser\n  await browser.close();\n})();`,
+    sim:{steps:[
+      {line:4,msg:'Launching Chromium...',dur:800,action:'launch'},
+      {line:9,msg:'Opening new tab...',dur:400,action:'newtab'},
+      {line:12,msg:'Navigating to https://example.com',dur:1000,action:'goto',url:'https://example.com',page:'example'},
+      {line:15,msg:'Browser closed.',dur:300,action:'close'}
+    ]}
+  },
+  { module:0, id:'viewport',
+    en:{title:'Viewport & Settings',obj:'Control the browser window size and device emulation.',
+      explain:'page.setViewport() sets the page dimensions. page.setUserAgent() changes the browser identity. You can emulate mobile devices with predefined device descriptors.',
+      quiz:{q:'What does setViewport control?',opts:['Network speed','Page dimensions','Font size','Cookie settings'],ans:1}},
+    fr:{title:'Viewport & Paramètres',obj:'Contrôlez la taille de la fenêtre et l\'émulation d\'appareils.',
+      explain:'page.setViewport() définit les dimensions. page.setUserAgent() change l\'identité du navigateur. Vous pouvez émuler des appareils mobiles avec des descripteurs prédéfinis.',
+      quiz:{q:'Que contrôle setViewport ?',opts:['La vitesse réseau','Les dimensions de la page','La taille de police','Les cookies'],ans:1}},
+    ar:{title:'نافذة العرض والإعدادات',obj:'تحكّم في حجم نافذة المتصفح ومحاكاة الأجهزة.',
+      explain:'page.setViewport() يحدد أبعاد الصفحة. page.setUserAgent() يغيّر هوية المتصفح. يمكنك محاكاة الأجهزة المحمولة.',
+      quiz:{q:'ماذا يتحكم به setViewport؟',opts:['سرعة الشبكة','أبعاد الصفحة','حجم الخط','إعدادات الكوكيز'],ans:1}},
+    code:`const puppeteer = require('puppeteer');\n\n(async () => {\n  const browser = await puppeteer.launch({ headless: false });\n  const page = await browser.newPage();\n  \n  // Set viewport to mobile size\n  await page.setViewport({\n    width: 375,\n    height: 812,\n    isMobile: true\n  });\n  \n  // Set user agent\n  await page.setUserAgent(\n    'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0)'\n  );\n  \n  await page.goto('https://example.com');\n  await browser.close();\n})();`,
+    sim:{steps:[
+      {line:3,msg:'Launching Chromium...',dur:600,action:'launch'},
+      {line:7,msg:'Setting viewport: 375×812 (mobile)',dur:500,action:'viewport',w:375,h:812},
+      {line:15,msg:'Setting user agent: iPhone',dur:300,action:'useragent'},
+      {line:19,msg:'Navigating to https://example.com',dur:900,action:'goto',url:'https://example.com',page:'example-mobile'},
+      {line:20,msg:'Browser closed.',dur:300,action:'close'}
+    ]}
+  },
+  { module:0, id:'selectors',
+    en:{title:'Selectors & Clicking',obj:'Find elements on the page and click them.',
+      explain:'page.click() clicks an element matching a CSS selector. page.waitForSelector() waits until an element appears. CSS selectors like #id, .class, and tag work just like in stylesheets.',
+      quiz:{q:'Which selector targets an element with id="submit"?',opts:['$submit','.submit','#submit','@submit'],ans:2}},
+    fr:{title:'Sélecteurs & Clics',obj:'Trouvez des éléments et cliquez dessus.',
+      explain:'page.click() clique sur un élément correspondant à un sélecteur CSS. page.waitForSelector() attend l\'apparition de l\'élément. Les sélecteurs #id, .class fonctionnent comme en CSS.',
+      quiz:{q:'Quel sélecteur cible id="submit" ?',opts:['$submit','.submit','#submit','@submit'],ans:2}},
+    ar:{title:'المحددات والنقر',obj:'ابحث عن العناصر في الصفحة وانقر عليها.',
+      explain:'page.click() ينقر على عنصر يطابق محدد CSS. page.waitForSelector() ينتظر ظهور العنصر.',
+      quiz:{q:'أي محدد يستهدف id="submit"؟',opts:['$submit','.submit','#submit','@submit'],ans:2}},
+    code:`const puppeteer = require('puppeteer');\n\n(async () => {\n  const browser = await puppeteer.launch({ headless: false });\n  const page = await browser.newPage();\n  await page.goto('https://shop-demo.com');\n  \n  // Wait for search box\n  await page.waitForSelector('#search-input');\n  \n  // Click the search box\n  await page.click('#search-input');\n  \n  // Click the search button\n  await page.click('#search-btn');\n  \n  // Wait for results to appear\n  await page.waitForSelector('.results');\n  \n  await browser.close();\n})();`,
+    sim:{steps:[
+      {line:3,msg:'Launching Chromium...',dur:500,action:'launch'},
+      {line:5,msg:'Navigating to https://shop-demo.com',dur:800,action:'goto',url:'https://shop-demo.com',page:'shop'},
+      {line:8,msg:'Waiting for #search-input...',dur:400,action:'wait'},
+      {line:11,msg:'Clicking #search-input',dur:300,action:'click',target:'search-input'},
+      {line:14,msg:'Clicking #search-btn',dur:300,action:'click',target:'search-btn'},
+      {line:17,msg:'Waiting for .results...',dur:700,action:'wait'},
+      {line:19,msg:'Browser closed.',dur:300,action:'close'}
+    ]}
+  },
+  { module:0, id:'typing',
+    en:{title:'Typing & Forms',obj:'Fill in forms automatically.',
+      explain:'page.type() types text character by character with realistic timing. page.select() picks from dropdowns. You can chain type, click, and select to fill entire forms.',
+      quiz:{q:'What does page.type() simulate?',opts:['Pasting text','Typing character by character','Setting innerHTML','Dispatching events'],ans:1}},
+    fr:{title:'Saisie & Formulaires',obj:'Remplissez des formulaires automatiquement.',
+      explain:'page.type() tape du texte caractère par caractère. page.select() sélectionne dans les listes déroulantes. Vous pouvez enchaîner type, click et select.',
+      quiz:{q:'Que simule page.type() ?',opts:['Coller du texte','Taper caractère par caractère','Définir innerHTML','Envoyer des événements'],ans:1}},
+    ar:{title:'الكتابة والنماذج',obj:'املأ النماذج تلقائياً.',
+      explain:'page.type() يكتب النص حرفاً بحرف. page.select() يختار من القوائم المنسدلة.',
+      quiz:{q:'ماذا يحاكي page.type()؟',opts:['لصق النص','الكتابة حرفاً بحرف','تعيين innerHTML','إرسال أحداث'],ans:1}},
+    code:`const puppeteer = require('puppeteer');\n\n(async () => {\n  const browser = await puppeteer.launch({ headless: false });\n  const page = await browser.newPage();\n  await page.goto('https://login-demo.com');\n  \n  // Type username\n  await page.type('#username', 'john_doe');\n  \n  // Type password\n  await page.type('#password', 'secure123');\n  \n  // Select role from dropdown\n  await page.select('#role', 'admin');\n  \n  // Click submit\n  await page.click('#submit-btn');\n  \n  // Wait for dashboard\n  await page.waitForSelector('.dashboard');\n  \n  await browser.close();\n})();`,
+    sim:{steps:[
+      {line:3,msg:'Launching...',dur:500,action:'launch'},
+      {line:5,msg:'Navigating to login page',dur:800,action:'goto',url:'https://login-demo.com',page:'login'},
+      {line:8,msg:'Typing "john_doe" into #username',dur:1000,action:'type',target:'username',text:'john_doe'},
+      {line:11,msg:'Typing "secure123" into #password',dur:800,action:'type',target:'password',text:'••••••••'},
+      {line:14,msg:'Selecting "admin" from #role',dur:400,action:'select',target:'role',text:'admin'},
+      {line:17,msg:'Clicking #submit-btn',dur:300,action:'click',target:'submit-btn'},
+      {line:20,msg:'Waiting for .dashboard...',dur:700,action:'goto',page:'dashboard',url:'https://login-demo.com/dashboard'},
+      {line:22,msg:'Browser closed.',dur:300,action:'close'}
+    ]}
+  },
+  // MODULE 2: Capture & Extract
+  { module:1, id:'screenshot',
+    en:{title:'Screenshots',obj:'Capture pages and elements as images.',
+      explain:'page.screenshot() captures the visible viewport. Set fullPage:true for the entire scrollable page. You can also screenshot specific elements using element.screenshot().',
+      quiz:{q:'How to capture the full scrollable page?',opts:['page.screenshot()','page.screenshot({fullPage:true})','page.capture()','page.print()'],ans:1}},
+    fr:{title:'Captures d\'écran',obj:'Capturez des pages et éléments en images.',
+      explain:'page.screenshot() capture la zone visible. fullPage:true pour la page entière. Vous pouvez aussi capturer un élément spécifique.',
+      quiz:{q:'Comment capturer la page entière ?',opts:['page.screenshot()','page.screenshot({fullPage:true})','page.capture()','page.print()'],ans:1}},
+    ar:{title:'لقطات الشاشة',obj:'التقط صفحات وعناصر كصور.',
+      explain:'page.screenshot() يلتقط المنطقة المرئية. fullPage:true للصفحة الكاملة.',
+      quiz:{q:'كيف تلتقط الصفحة الكاملة؟',opts:['page.screenshot()','page.screenshot({fullPage:true})','page.capture()','page.print()'],ans:1}},
+    code:`const puppeteer = require('puppeteer');\n\n(async () => {\n  const browser = await puppeteer.launch();\n  const page = await browser.newPage();\n  await page.goto('https://news-demo.com');\n  \n  // Viewport screenshot\n  await page.screenshot({ path: 'viewport.png' });\n  \n  // Full page screenshot\n  await page.screenshot({\n    path: 'full-page.png',\n    fullPage: true\n  });\n  \n  // Element screenshot\n  const header = await page.$('.main-header');\n  await header.screenshot({ path: 'header.png' });\n  \n  await browser.close();\n})();`,
+    sim:{steps:[
+      {line:3,msg:'Launching...',dur:500,action:'launch'},
+      {line:5,msg:'Navigating to news site',dur:800,action:'goto',url:'https://news-demo.com',page:'news'},
+      {line:8,msg:'📸 Viewport screenshot → viewport.png',dur:600,action:'screenshot'},
+      {line:11,msg:'📸 Full page screenshot → full-page.png',dur:800,action:'screenshot-full'},
+      {line:17,msg:'📸 Element screenshot (.main-header) → header.png',dur:500,action:'screenshot-element',target:'header'},
+      {line:20,msg:'Browser closed.',dur:300,action:'close'}
+    ]}
+  },
+  { module:1, id:'pdf',
+    en:{title:'PDF Generation',obj:'Generate PDF documents from web pages.',
+      explain:'page.pdf() generates a PDF from the current page. Only works in headless mode. You can set format (A4, Letter), margins, headers, footers, and print background graphics.',
+      quiz:{q:'PDF generation requires which mode?',opts:['headless: false','headless: true','Both work','Neither'],ans:1}},
+    fr:{title:'Génération PDF',obj:'Générez des documents PDF à partir de pages web.',
+      explain:'page.pdf() génère un PDF de la page courante. Fonctionne uniquement en mode headless. Vous pouvez définir le format, les marges et les en-têtes/pieds de page.',
+      quiz:{q:'La génération PDF nécessite quel mode ?',opts:['headless: false','headless: true','Les deux','Aucun'],ans:1}},
+    ar:{title:'توليد PDF',obj:'أنشئ مستندات PDF من صفحات الويب.',
+      explain:'page.pdf() يولّد PDF من الصفحة الحالية. يعمل فقط في وضع headless.',
+      quiz:{q:'توليد PDF يتطلب أي وضع؟',opts:['headless: false','headless: true','كلاهما','لا شيء'],ans:1}},
+    code:`const puppeteer = require('puppeteer');\n\n(async () => {\n  const browser = await puppeteer.launch(); // headless\n  const page = await browser.newPage();\n  await page.goto('https://report-demo.com');\n  \n  // Generate PDF\n  await page.pdf({\n    path: 'report.pdf',\n    format: 'A4',\n    margin: {\n      top: '20mm',\n      bottom: '20mm',\n      left: '15mm',\n      right: '15mm'\n    },\n    printBackground: true\n  });\n  \n  console.log('PDF generated!');\n  await browser.close();\n})();`,
+    sim:{steps:[
+      {line:3,msg:'Launching (headless)...',dur:500,action:'launch'},
+      {line:5,msg:'Navigating to report page',dur:800,action:'goto',url:'https://report-demo.com',page:'report'},
+      {line:8,msg:'📄 Generating PDF (A4, with margins)...',dur:1200,action:'pdf'},
+      {line:20,msg:'PDF generated!',dur:300,action:'log'},
+      {line:21,msg:'Browser closed.',dur:300,action:'close'}
+    ]}
+  },
+  { module:1, id:'scrape-basic',
+    en:{title:'Web Scraping Basics',obj:'Extract data from web pages.',
+      explain:'page.evaluate() runs JavaScript inside the page context. page.$$eval() selects multiple elements and maps over them. Data is returned from the browser to your Node.js script.',
+      quiz:{q:'Where does page.evaluate() code run?',opts:['In Node.js','In the browser page','In both','In a worker'],ans:1}},
+    fr:{title:'Web Scraping — Bases',obj:'Extraire des données de pages web.',
+      explain:'page.evaluate() exécute du JavaScript dans le contexte de la page. page.$$eval() sélectionne plusieurs éléments et itère dessus.',
+      quiz:{q:'Où s\'exécute le code de page.evaluate() ?',opts:['Dans Node.js','Dans la page navigateur','Les deux','Dans un worker'],ans:1}},
+    ar:{title:'تجريف الويب — الأساسيات',obj:'استخرج البيانات من صفحات الويب.',
+      explain:'page.evaluate() يشغّل JavaScript داخل سياق الصفحة. page.$$eval() يحدد عناصر متعددة.',
+      quiz:{q:'أين يعمل كود page.evaluate()؟',opts:['في Node.js','في صفحة المتصفح','في كليهما','في worker'],ans:1}},
+    code:`const puppeteer = require('puppeteer');\n\n(async () => {\n  const browser = await puppeteer.launch();\n  const page = await browser.newPage();\n  await page.goto('https://shop-demo.com/products');\n  \n  // Extract all product data\n  const products = await page.$$eval(\n    '.product-card',\n    cards => cards.map(card => ({\n      name: card.querySelector('.name').textContent,\n      price: card.querySelector('.price').textContent,\n      rating: card.querySelector('.rating').textContent,\n    }))\n  );\n  \n  console.log(JSON.stringify(products, null, 2));\n  await browser.close();\n})();`,
+    sim:{steps:[
+      {line:3,msg:'Launching...',dur:500,action:'launch'},
+      {line:5,msg:'Navigating to products page',dur:800,action:'goto',url:'https://shop-demo.com/products',page:'products'},
+      {line:8,msg:'Extracting .product-card elements...',dur:600,action:'scrape'},
+      {line:17,msg:'Found 4 products!',dur:400,action:'data',data:[
+        {name:'Laptop Pro',price:'$999',rating:'⭐ 4.5'},
+        {name:'Wireless Mouse',price:'$29',rating:'⭐ 4.2'},
+        {name:'Monitor 27"',price:'$349',rating:'⭐ 4.7'},
+        {name:'USB-C Hub',price:'$49',rating:'⭐ 4.0'}
+      ]},
+      {line:18,msg:'Browser closed.',dur:300,action:'close'}
+    ]}
+  },
+  { module:1, id:'scrape-advanced',
+    en:{title:'Advanced Scraping',obj:'Handle pagination, infinite scroll, and dynamic content.',
+      explain:'For pagination, loop through pages by clicking "Next". For infinite scroll, use page.evaluate to scroll down and waitForFunction to wait for new content. waitForFunction checks a custom condition.',
+      quiz:{q:'How to handle infinite scroll?',opts:['page.scroll()','Evaluate + scroll + waitForFunction','page.scrollToBottom()','browser.scroll()'],ans:1}},
+    fr:{title:'Scraping Avancé',obj:'Gérez la pagination, le scroll infini et le contenu dynamique.',
+      explain:'Pour la pagination, bouclez en cliquant "Suivant". Pour le scroll infini, utilisez evaluate pour scroller et waitForFunction pour attendre le nouveau contenu.',
+      quiz:{q:'Comment gérer le scroll infini ?',opts:['page.scroll()','Evaluate + scroll + waitForFunction','page.scrollToBottom()','browser.scroll()'],ans:1}},
+    ar:{title:'تجريف متقدم',obj:'تعامل مع التصفح، التمرير اللانهائي، والمحتوى الديناميكي.',
+      explain:'للتصفح، كرر بالنقر على "التالي". للتمرير اللانهائي، استخدم evaluate للتمرير و waitForFunction للانتظار.',
+      quiz:{q:'كيف تتعامل مع التمرير اللانهائي؟',opts:['page.scroll()','Evaluate + scroll + waitForFunction','page.scrollToBottom()','browser.scroll()'],ans:1}},
+    code:`const puppeteer = require('puppeteer');\n\n(async () => {\n  const browser = await puppeteer.launch();\n  const page = await browser.newPage();\n  await page.goto('https://shop-demo.com/products');\n  \n  let allProducts = [];\n  \n  for (let i = 0; i < 3; i++) {\n    // Scrape current page\n    const products = await page.$$eval(\n      '.product-card',\n      cards => cards.map(c => c.querySelector('.name').textContent)\n    );\n    allProducts.push(...products);\n    \n    // Click "Next" if available\n    const nextBtn = await page.$('.next-page');\n    if (nextBtn) await nextBtn.click();\n    \n    // Wait for new content\n    await page.waitForFunction(\n      'document.querySelector(".loading") === null'\n    );\n  }\n  \n  console.log(allProducts); // 12 products total\n  await browser.close();\n})();`,
+    sim:{steps:[
+      {line:3,msg:'Launching...',dur:500,action:'launch'},
+      {line:5,msg:'Navigating to products',dur:700,action:'goto',url:'https://shop-demo.com/products',page:'products'},
+      {line:11,msg:'Page 1: Extracting products...',dur:500,action:'scrape'},
+      {line:19,msg:'Clicking .next-page...',dur:400,action:'click',target:'next'},
+      {line:22,msg:'Waiting for content to load...',dur:600,action:'wait'},
+      {line:11,msg:'Page 2: Extracting products...',dur:500,action:'scrape'},
+      {line:19,msg:'Clicking .next-page...',dur:400,action:'click',target:'next'},
+      {line:22,msg:'Waiting for content to load...',dur:600,action:'wait'},
+      {line:11,msg:'Page 3: Extracting products...',dur:500,action:'scrape'},
+      {line:27,msg:'Total: 12 products scraped!',dur:400,action:'data',data:[
+        {name:'Product 1-4',price:'Page 1',rating:'✓'},
+        {name:'Product 5-8',price:'Page 2',rating:'✓'},
+        {name:'Product 9-12',price:'Page 3',rating:'✓'}
+      ]},
+      {line:28,msg:'Browser closed.',dur:300,action:'close'}
+    ]}
+  },
+  // MODULE 3: Network & Performance
+  { module:2, id:'network-intercept',
+    en:{title:'Network Interception',obj:'Block or modify network requests.',
+      explain:'page.setRequestInterception(true) enables intercepting every request. Use request.resourceType() to check what\'s being loaded, then abort() or continue() selectively.',
+      quiz:{q:'What must you call to enable interception?',opts:['page.listen()','page.setRequestInterception(true)','page.intercept()','browser.onRequest()'],ans:1}},
+    fr:{title:'Interception Réseau',obj:'Bloquez ou modifiez les requêtes réseau.',
+      explain:'page.setRequestInterception(true) permet d\'intercepter chaque requête. Utilisez request.resourceType() pour vérifier le type, puis abort() ou continue().',
+      quiz:{q:'Que faut-il appeler pour activer l\'interception ?',opts:['page.listen()','page.setRequestInterception(true)','page.intercept()','browser.onRequest()'],ans:1}},
+    ar:{title:'اعتراض الشبكة',obj:'حظر أو تعديل طلبات الشبكة.',
+      explain:'page.setRequestInterception(true) يمكّن اعتراض كل طلب. استخدم request.resourceType() للتحقق، ثم abort() أو continue().',
+      quiz:{q:'ماذا تستدعي لتفعيل الاعتراض؟',opts:['page.listen()','page.setRequestInterception(true)','page.intercept()','browser.onRequest()'],ans:1}},
+    code:`const puppeteer = require('puppeteer');\n\n(async () => {\n  const browser = await puppeteer.launch({ headless: false });\n  const page = await browser.newPage();\n  \n  // Enable request interception\n  await page.setRequestInterception(true);\n  \n  page.on('request', request => {\n    // Block images and fonts\n    if (['image', 'font'].includes(\n      request.resourceType()\n    )) {\n      request.abort();\n    } else {\n      request.continue();\n    }\n  });\n  \n  await page.goto('https://news-demo.com');\n  // Page loads faster without images!\n  await browser.close();\n})();`,
+    sim:{steps:[
+      {line:3,msg:'Launching...',dur:500,action:'launch'},
+      {line:7,msg:'Enabling request interception...',dur:300,action:'intercept'},
+      {line:9,msg:'Listener registered: block images & fonts',dur:200,action:'log'},
+      {line:20,msg:'Navigating to news site...',dur:600,action:'goto',url:'https://news-demo.com',page:'news-noimg'},
+      {line:20,msg:'⛔ Blocked: banner.jpg (image)',dur:100,action:'block'},
+      {line:20,msg:'⛔ Blocked: hero.png (image)',dur:100,action:'block'},
+      {line:20,msg:'⛔ Blocked: Roboto.woff2 (font)',dur:100,action:'block'},
+      {line:20,msg:'✅ Allowed: styles.css',dur:100,action:'allow'},
+      {line:20,msg:'✅ Allowed: app.js',dur:100,action:'allow'},
+      {line:22,msg:'Page loaded (faster without images!)',dur:300,action:'log'},
+      {line:23,msg:'Browser closed.',dur:300,action:'close'}
+    ]}
+  },
+  { module:2, id:'network-monitor',
+    en:{title:'Monitoring Requests',obj:'Log and analyze all network activity.',
+      explain:'page.on("request") fires for every outgoing request. page.on("response") fires for every response. You can log URLs, status codes, sizes, and timing to understand network behavior.',
+      quiz:{q:'Which event fires for every HTTP response?',opts:['page.on("request")','page.on("response")','page.on("load")','page.on("network")'],ans:1}},
+    fr:{title:'Surveillance des Requêtes',obj:'Enregistrez et analysez toute l\'activité réseau.',
+      explain:'page.on("request") se déclenche pour chaque requête. page.on("response") pour chaque réponse. Vous pouvez enregistrer les URL, codes de statut et tailles.',
+      quiz:{q:'Quel événement se déclenche pour chaque réponse ?',opts:['page.on("request")','page.on("response")','page.on("load")','page.on("network")'],ans:1}},
+    ar:{title:'مراقبة الطلبات',obj:'سجّل وحلّل كل نشاط الشبكة.',
+      explain:'page.on("request") يُطلق لكل طلب. page.on("response") لكل استجابة.',
+      quiz:{q:'أي حدث يُطلق لكل استجابة HTTP؟',opts:['page.on("request")','page.on("response")','page.on("load")','page.on("network")'],ans:1}},
+    code:`const puppeteer = require('puppeteer');\n\n(async () => {\n  const browser = await puppeteer.launch();\n  const page = await browser.newPage();\n  \n  // Log all requests\n  page.on('request', req => {\n    console.log(\n      req.method(), req.resourceType(), req.url()\n    );\n  });\n  \n  // Log all responses\n  page.on('response', res => {\n    console.log(\n      res.status(), res.url()\n    );\n  });\n  \n  await page.goto('https://api-demo.com');\n  await browser.close();\n})();`,
+    sim:{steps:[
+      {line:3,msg:'Launching...',dur:500,action:'launch'},
+      {line:7,msg:'Registering request listener...',dur:200,action:'log'},
+      {line:14,msg:'Registering response listener...',dur:200,action:'log'},
+      {line:20,msg:'Navigating to api-demo.com...',dur:600,action:'goto',url:'https://api-demo.com',page:'api'},
+      {line:9,msg:'GET document https://api-demo.com',dur:150,action:'network',type:'doc',status:200},
+      {line:9,msg:'GET stylesheet styles.css',dur:100,action:'network',type:'css',status:200},
+      {line:9,msg:'GET script app.js',dur:100,action:'network',type:'js',status:200},
+      {line:9,msg:'GET fetch /api/data',dur:200,action:'network',type:'doc',status:200},
+      {line:9,msg:'GET image logo.png',dur:150,action:'network',type:'img',status:200},
+      {line:21,msg:'Browser closed.',dur:300,action:'close'}
+    ]}
+  },
+  { module:2, id:'performance',
+    en:{title:'Performance & Tracing',obj:'Measure page load performance.',
+      explain:'page.tracing.start() records a timeline trace. page.metrics() returns runtime metrics like JSHeapUsedSize and Nodes count. These help identify performance bottlenecks.',
+      quiz:{q:'Which method returns heap size and DOM node count?',opts:['page.performance()','page.metrics()','page.stats()','page.tracing()'],ans:1}},
+    fr:{title:'Performance & Traçage',obj:'Mesurez la performance de chargement.',
+      explain:'page.tracing.start() enregistre une trace temporelle. page.metrics() retourne des métriques comme JSHeapUsedSize et le nombre de Nodes.',
+      quiz:{q:'Quelle méthode retourne la taille du heap ?',opts:['page.performance()','page.metrics()','page.stats()','page.tracing()'],ans:1}},
+    ar:{title:'الأداء والتتبع',obj:'قياس أداء تحميل الصفحة.',
+      explain:'page.tracing.start() يسجّل تتبعاً زمنياً. page.metrics() يُرجع مقاييس مثل حجم الذاكرة وعدد العقد.',
+      quiz:{q:'أي طريقة تُرجع حجم الذاكرة وعدد العقد؟',opts:['page.performance()','page.metrics()','page.stats()','page.tracing()'],ans:1}},
+    code:`const puppeteer = require('puppeteer');\n\n(async () => {\n  const browser = await puppeteer.launch();\n  const page = await browser.newPage();\n  \n  // Start tracing\n  await page.tracing.start({ path: 'trace.json' });\n  \n  const start = Date.now();\n  await page.goto('https://news-demo.com');\n  const loadTime = Date.now() - start;\n  \n  // Stop tracing\n  await page.tracing.stop();\n  \n  // Get metrics\n  const metrics = await page.metrics();\n  \n  console.log('Load time:', loadTime, 'ms');\n  console.log('JS Heap:', metrics.JSHeapUsedSize);\n  console.log('DOM Nodes:', metrics.Nodes);\n  \n  await browser.close();\n})();`,
+    sim:{steps:[
+      {line:3,msg:'Launching...',dur:500,action:'launch'},
+      {line:7,msg:'Starting trace → trace.json',dur:300,action:'log'},
+      {line:10,msg:'Navigating to news site...',dur:1000,action:'goto',url:'https://news-demo.com',page:'news'},
+      {line:14,msg:'Stopping trace...',dur:200,action:'log'},
+      {line:17,msg:'Collecting metrics...',dur:300,action:'metrics'},
+      {line:19,msg:'Load time: 847ms',dur:200,action:'log'},
+      {line:20,msg:'JS Heap: 12.4 MB',dur:150,action:'log'},
+      {line:21,msg:'DOM Nodes: 1,247',dur:150,action:'log'},
+      {line:23,msg:'Browser closed.',dur:300,action:'close'}
+    ]}
+  },
+  // MODULE 4: Real-World
+  { module:3, id:'errors',
+    en:{title:'Error Handling & Retries',obj:'Build robust automation with proper error handling.',
+      explain:'Always wrap Puppeteer operations in try/catch. Set timeouts to avoid hanging. Implement retry logic for flaky operations. Listen to page.on("error") and page.on("pageerror") for runtime errors.',
+      quiz:{q:'What happens if waitForSelector times out?',opts:['Returns null','Throws an error','Returns false','Retries automatically'],ans:1}},
+    fr:{title:'Gestion d\'Erreurs & Reprises',obj:'Construisez une automatisation robuste.',
+      explain:'Encapsulez toujours les opérations dans try/catch. Définissez des timeouts. Implémentez une logique de reprise pour les opérations instables.',
+      quiz:{q:'Que se passe-t-il si waitForSelector expire ?',opts:['Retourne null','Lance une erreur','Retourne false','Réessaie automatiquement'],ans:1}},
+    ar:{title:'معالجة الأخطاء وإعادة المحاولة',obj:'بناء أتمتة متينة مع معالجة صحيحة للأخطاء.',
+      explain:'غلّف عمليات Puppeteer دائماً في try/catch. حدد مهلات زمنية. نفّذ منطق إعادة المحاولة.',
+      quiz:{q:'ماذا يحدث إذا انتهت مهلة waitForSelector؟',opts:['يُرجع null','يُلقي خطأً','يُرجع false','يعيد المحاولة تلقائياً'],ans:1}},
+    code:`const puppeteer = require('puppeteer');\n\n// Retry helper\nasync function retry(fn, retries = 3) {\n  for (let i = 0; i < retries; i++) {\n    try {\n      return await fn();\n    } catch (err) {\n      console.log(\`Attempt \${i+1} failed: \${err.message}\`);\n      if (i === retries - 1) throw err;\n    }\n  }\n}\n\n(async () => {\n  const browser = await puppeteer.launch();\n  const page = await browser.newPage();\n  \n  // Set default timeout\n  page.setDefaultTimeout(10000);\n  \n  // Listen for errors\n  page.on('pageerror', err => {\n    console.error('Page error:', err.message);\n  });\n  \n  try {\n    await retry(async () => {\n      await page.goto('https://flaky-site.com');\n      await page.waitForSelector('.content');\n    });\n    console.log('Success!');\n  } catch (err) {\n    console.error('All retries failed:', err.message);\n  } finally {\n    await browser.close();\n  }\n})();`,
+    sim:{steps:[
+      {line:15,msg:'Launching...',dur:500,action:'launch'},
+      {line:19,msg:'Setting default timeout: 10000ms',dur:200,action:'log'},
+      {line:22,msg:'Error listener registered',dur:200,action:'log'},
+      {line:28,msg:'Attempt 1: Navigating...',dur:600,action:'goto',url:'https://flaky-site.com',page:'error'},
+      {line:29,msg:'⚠ Attempt 1 failed: Timeout waiting for .content',dur:400,action:'error'},
+      {line:28,msg:'Attempt 2: Navigating...',dur:600,action:'goto',url:'https://flaky-site.com',page:'success'},
+      {line:29,msg:'Waiting for .content...',dur:400,action:'wait'},
+      {line:31,msg:'✅ Success!',dur:300,action:'log'},
+      {line:35,msg:'Browser closed.',dur:300,action:'close'}
+    ]}
+  }
+];
+
+// ═══════════════════════════════════════════
+// CHALLENGES DATA (8 challenges)
+// ═══════════════════════════════════════════
+const challenges = [
+  { id:'c1', diff:'easy', pts:100, lessonRef:'launch',
+    en:{title:'Navigate & Screenshot',desc:'Write a script that navigates to a URL and takes a screenshot.',hint:'Use page.goto() then page.screenshot()'},
+    fr:{title:'Naviguer & Capturer',desc:'Écrivez un script qui navigue vers une URL et prend une capture.',hint:'Utilisez page.goto() puis page.screenshot()'},
+    ar:{title:'تنقل والتقط',desc:'اكتب سكريبت ينتقل إلى URL ويأخذ لقطة شاشة.',hint:'استخدم page.goto() ثم page.screenshot()'},
+    answer:['page.goto','page.screenshot']
+  },
+  { id:'c2', diff:'easy', pts:100, lessonRef:'selectors',
+    en:{title:'Find the Page Title',desc:'Extract the page title using page.title() and log it.',hint:'const title = await page.title()'},
+    fr:{title:'Trouver le Titre',desc:'Extrayez le titre de la page avec page.title().',hint:'const title = await page.title()'},
+    ar:{title:'ابحث عن العنوان',desc:'استخرج عنوان الصفحة باستخدام page.title().',hint:'const title = await page.title()'},
+    answer:['page.title','console.log']
+  },
+  { id:'c3', diff:'medium', pts:200, lessonRef:'typing',
+    en:{title:'Login Form Fill',desc:'Fill a login form with username and password, then submit.',hint:'Use page.type() for each field, then page.click() on submit'},
+    fr:{title:'Remplir un Formulaire',desc:'Remplissez un formulaire de connexion et soumettez-le.',hint:'Utilisez page.type() pour chaque champ, puis page.click()'},
+    ar:{title:'ملء نموذج تسجيل الدخول',desc:'املأ نموذج تسجيل الدخول بالاسم وكلمة المرور ثم أرسله.',hint:'استخدم page.type() لكل حقل، ثم page.click()'},
+    answer:['page.type','page.type','page.click']
+  },
+  { id:'c4', diff:'medium', pts:200, lessonRef:'scrape-basic',
+    en:{title:'Extract Product Prices',desc:'Scrape all product prices from a page using $$eval.',hint:'Use page.$$eval(".price", els => els.map(e => e.textContent))'},
+    fr:{title:'Extraire les Prix',desc:'Récupérez tous les prix avec $$eval.',hint:'Utilisez page.$$eval(".price", els => els.map(e => e.textContent))'},
+    ar:{title:'استخراج الأسعار',desc:'استخرج جميع أسعار المنتجات باستخدام $$eval.',hint:'استخدم page.$$eval(".price", els => els.map(e => e.textContent))'},
+    answer:['page.$$eval','textContent']
+  },
+  { id:'c5', diff:'medium', pts:250, lessonRef:'screenshot',
+    en:{title:'Element Screenshot',desc:'Capture only the main header element as a screenshot.',hint:'Use page.$() to select the element, then element.screenshot()'},
+    fr:{title:'Capture d\'Élément',desc:'Capturez uniquement l\'en-tête principal.',hint:'Utilisez page.$() puis element.screenshot()'},
+    ar:{title:'لقطة عنصر',desc:'التقط فقط عنصر الترويسة الرئيسي كصورة.',hint:'استخدم page.$() ثم element.screenshot()'},
+    answer:['page.$','screenshot']
+  },
+  { id:'c6', diff:'hard', pts:300, lessonRef:'network-intercept',
+    en:{title:'Block All Images',desc:'Set up request interception to block all image resources.',hint:'Check request.resourceType() === "image" then abort()'},
+    fr:{title:'Bloquer les Images',desc:'Mettez en place l\'interception pour bloquer les images.',hint:'Vérifiez request.resourceType() === "image" puis abort()'},
+    ar:{title:'حظر جميع الصور',desc:'أعدّ اعتراض الطلبات لحظر جميع الصور.',hint:'تحقق من request.resourceType() === "image" ثم abort()'},
+    answer:['setRequestInterception','resourceType','abort']
+  },
+  { id:'c7', diff:'hard', pts:350, lessonRef:'scrape-advanced',
+    en:{title:'Paginated Scraping',desc:'Scrape product names across 3 pages by clicking Next each time.',hint:'Loop, scrape, click .next-page, waitForFunction'},
+    fr:{title:'Scraping Paginé',desc:'Récupérez les noms de produits sur 3 pages.',hint:'Bouclez, scrapez, cliquez .next-page, waitForFunction'},
+    ar:{title:'تجريف مُصفحن',desc:'استخرج أسماء المنتجات عبر 3 صفحات.',hint:'كرر، استخرج، انقر .next-page، waitForFunction'},
+    answer:['for','$$eval','click','.next-page','waitForFunction']
+  },
+  { id:'c8', diff:'hard', pts:400, lessonRef:'errors',
+    en:{title:'Retry on Failure',desc:'Write a retry wrapper that attempts an operation 3 times before failing.',hint:'Use a for loop with try/catch inside'},
+    fr:{title:'Reprise sur Erreur',desc:'Écrivez une fonction de reprise tentant 3 fois une opération.',hint:'Utilisez une boucle for avec try/catch'},
+    ar:{title:'إعادة المحاولة عند الفشل',desc:'اكتب مغلّف إعادة محاولة يحاول العملية 3 مرات.',hint:'استخدم حلقة for مع try/catch'},
+    answer:['for','try','catch','retries']
+  }
+];
+
+const badges = [
+  {id:'first-run',icon:'🚀',en:'First Run',fr:'Premier Lancement',ar:'أول تشغيل'},
+  {id:'fast-learner',icon:'📚',en:'Fast Learner',fr:'Apprentissage Rapide',ar:'متعلم سريع'},
+  {id:'half-lessons',icon:'🎓',en:'Half Way',fr:'À Mi-chemin',ar:'في المنتصف'},
+  {id:'all-lessons',icon:'🏆',en:'Scholar',fr:'Érudit',ar:'عالم'},
+  {id:'first-challenge',icon:'🎮',en:'Challenger',fr:'Challenger',ar:'متحدّي'},
+  {id:'speed-demon',icon:'⚡',en:'Speed Demon',fr:'Démon de Vitesse',ar:'سريع البرق'},
+  {id:'data-miner',icon:'⛏️',en:'Data Miner',fr:'Mineur de Données',ar:'منقّب بيانات'},
+  {id:'master',icon:'👑',en:'Puppeteer Master',fr:'Maître Puppeteer',ar:'محترف Puppeteer'},
+];
+
+const demoTemplates = [
+  {id:'t-screenshot',en:'Screenshot',fr:'Capture',ar:'لقطة شاشة',
+    code:`const puppeteer = require('puppeteer');\n\n(async () => {\n  const browser = await puppeteer.launch();\n  const page = await browser.newPage();\n  await page.goto('https://example.com');\n  await page.screenshot({ path: 'page.png' });\n  await browser.close();\n})();`},
+  {id:'t-formfill',en:'Form Fill',fr:'Remplir Formulaire',ar:'ملء نموذج',
+    code:`const puppeteer = require('puppeteer');\n\n(async () => {\n  const browser = await puppeteer.launch({ headless: false });\n  const page = await browser.newPage();\n  await page.goto('https://login-demo.com');\n  await page.type('#username', 'demo_user');\n  await page.type('#password', 'pass1234');\n  await page.click('#submit-btn');\n  await page.waitForSelector('.dashboard');\n  await browser.close();\n})();`},
+  {id:'t-scrape',en:'Scrape Data',fr:'Extraire Données',ar:'استخراج بيانات',
+    code:`const puppeteer = require('puppeteer');\n\n(async () => {\n  const browser = await puppeteer.launch();\n  const page = await browser.newPage();\n  await page.goto('https://shop-demo.com/products');\n  const data = await page.$$eval('.product-card',\n    cards => cards.map(c => ({\n      name: c.querySelector('.name').textContent,\n      price: c.querySelector('.price').textContent\n    }))\n  );\n  console.log(JSON.stringify(data, null, 2));\n  await browser.close();\n})();`},
+  {id:'t-pdf',en:'Generate PDF',fr:'Générer PDF',ar:'توليد PDF',
+    code:`const puppeteer = require('puppeteer');\n\n(async () => {\n  const browser = await puppeteer.launch();\n  const page = await browser.newPage();\n  await page.goto('https://report-demo.com');\n  await page.pdf({\n    path: 'report.pdf',\n    format: 'A4',\n    printBackground: true\n  });\n  console.log('PDF saved!');\n  await browser.close();\n})();`},
+  {id:'t-block',en:'Block Images',fr:'Bloquer Images',ar:'حظر الصور',
+    code:`const puppeteer = require('puppeteer');\n\n(async () => {\n  const browser = await puppeteer.launch({ headless: false });\n  const page = await browser.newPage();\n  await page.setRequestInterception(true);\n  page.on('request', req => {\n    if (req.resourceType() === 'image') req.abort();\n    else req.continue();\n  });\n  await page.goto('https://news-demo.com');\n  console.log('Page loaded without images!');\n  await browser.close();\n})();`},
+  {id:'t-perf',en:'Performance',fr:'Performance',ar:'الأداء',
+    code:`const puppeteer = require('puppeteer');\n\n(async () => {\n  const browser = await puppeteer.launch();\n  const page = await browser.newPage();\n  const start = Date.now();\n  await page.goto('https://news-demo.com');\n  console.log('Load time:', Date.now() - start, 'ms');\n  const metrics = await page.metrics();\n  console.log('JS Heap:', metrics.JSHeapUsedSize);\n  console.log('DOM Nodes:', metrics.Nodes);\n  await browser.close();\n})();`},
+  {id:'t-mobile',en:'Mobile Emulation',fr:'Émulation Mobile',ar:'محاكاة الهاتف',
+    code:`const puppeteer = require('puppeteer');\n\n(async () => {\n  const browser = await puppeteer.launch({ headless: false });\n  const page = await browser.newPage();\n  await page.setViewport({\n    width: 375, height: 812,\n    isMobile: true, hasTouch: true\n  });\n  await page.setUserAgent(\n    'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0)'\n  );\n  await page.goto('https://example.com');\n  await page.screenshot({ path: 'mobile.png' });\n  await browser.close();\n})();`},
+  {id:'t-retry',en:'Retry Pattern',fr:'Pattern de Reprise',ar:'نمط إعادة المحاولة',
+    code:`const puppeteer = require('puppeteer');\n\nasync function retry(fn, n = 3) {\n  for (let i = 0; i < n; i++) {\n    try { return await fn(); }\n    catch (e) {\n      console.log('Attempt', i+1, 'failed:', e.message);\n      if (i === n-1) throw e;\n    }\n  }\n}\n\n(async () => {\n  const browser = await puppeteer.launch();\n  const page = await browser.newPage();\n  await retry(async () => {\n    await page.goto('https://flaky-site.com');\n    await page.waitForSelector('.content', { timeout: 5000 });\n  });\n  console.log('Success!');\n  await browser.close();\n})();`}
+];
+
+const cheatSheetData = [
+  {cat:'Browser',items:[
+    ['puppeteer.launch(options)','Launch Chromium'],
+    ['browser.newPage()','Open new tab'],
+    ['browser.close()','Close browser'],
+    ['browser.pages()','List all open pages'],
+  ]},
+  {cat:'Navigation',items:[
+    ['page.goto(url)','Navigate to URL'],
+    ['page.goBack()','Go back'],
+    ['page.goForward()','Go forward'],
+    ['page.reload()','Reload page'],
+    ['page.url()','Get current URL'],
+    ['page.title()','Get page title'],
+  ]},
+  {cat:'Selectors & Actions',items:[
+    ['page.click(selector)','Click element'],
+    ['page.type(selector, text)','Type into input'],
+    ['page.select(selector, value)','Select dropdown option'],
+    ['page.focus(selector)','Focus element'],
+    ['page.hover(selector)','Hover over element'],
+    ['page.$(selector)','Select one element'],
+    ['page.$$(selector)','Select all matching'],
+    ['page.waitForSelector(sel)','Wait for element'],
+  ]},
+  {cat:'Capture',items:[
+    ['page.screenshot(opts)','Take screenshot'],
+    ['page.pdf(opts)','Generate PDF'],
+    ['element.screenshot()','Screenshot element'],
+  ]},
+  {cat:'Evaluate',items:[
+    ['page.evaluate(fn)','Run JS in page'],
+    ['page.$$eval(sel, fn)','Run JS on elements'],
+    ['page.$eval(sel, fn)','Run JS on one element'],
+    ['page.waitForFunction(fn)','Wait for condition'],
+  ]},
+  {cat:'Network',items:[
+    ['page.setRequestInterception(true)','Enable interception'],
+    ['page.on("request", fn)','Listen to requests'],
+    ['page.on("response", fn)','Listen to responses'],
+    ['request.abort()','Block a request'],
+    ['request.continue()','Allow a request'],
+  ]},
+  {cat:'Performance',items:[
+    ['page.tracing.start()','Start tracing'],
+    ['page.tracing.stop()','Stop tracing'],
+    ['page.metrics()','Get runtime metrics'],
+  ]},
+  {cat:'Settings',items:[
+    ['page.setViewport(opts)','Set page dimensions'],
+    ['page.setUserAgent(str)','Set user agent'],
+    ['page.setDefaultTimeout(ms)','Set default timeout'],
+    ['page.emulate(device)','Emulate a device'],
+  ]}
+];
+
+// ═══════════════════════════════════════════
+// SIMULATED PAGES
+// ═══════════════════════════════════════════
+function renderSimPage(pageId,state){
+  const pages={
+    'example':`<div style="font-family:serif;max-width:500px;margin:0 auto"><h1 style="font-size:1.5rem;border-bottom:2px solid #888;padding-bottom:8px">Example Domain</h1><p style="color:var(--text2);line-height:1.6;margin:12px 0">This domain is for use in illustrative examples in documents. You may use this domain in literature without prior coordination.</p><p><a href="#" style="color:var(--accent)">More information...</a></p></div>`,
+    'example-mobile':`<div style="font-family:serif;max-width:300px;margin:0 auto;font-size:.85rem"><h1 style="font-size:1.1rem;border-bottom:2px solid #888;padding-bottom:6px">Example Domain</h1><p style="color:var(--text2);line-height:1.5;margin:8px 0;font-size:.78rem">This domain is for use in illustrative examples.</p><p style="font-size:.75rem;text-align:center;margin-top:12px;padding:6px;background:var(--bg3);border-radius:4px">📱 Mobile viewport: 375×812</p></div>`,
+    'shop':`<div style="max-width:500px;margin:0 auto"><div style="display:flex;gap:8px;padding:10px;background:var(--bg3);border-radius:8px;margin-bottom:16px"><input id="sim-search-input" type="text" placeholder="Search products..." style="flex:1;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:.85rem"><button id="sim-search-btn" style="padding:8px 16px;background:var(--accent);color:var(--bg);border:none;border-radius:6px;font-weight:600">Search</button></div><div style="color:var(--text2);text-align:center;padding:20px">Enter a search term above</div></div>`,
+    'products':`<div style="max-width:500px;margin:0 auto"><h2 style="font-size:1.1rem;margin-bottom:12px">Products</h2><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${[{n:'Laptop Pro',p:'$999',r:'⭐ 4.5'},{n:'Wireless Mouse',p:'$29',r:'⭐ 4.2'},{n:'Monitor 27"',p:'$349',r:'⭐ 4.7'},{n:'USB-C Hub',p:'$49',r:'⭐ 4.0'}].map(x=>`<div class="product-card" style="padding:12px;background:var(--bg3);border-radius:8px"><div class="name" style="font-weight:600;font-size:.85rem">${x.n}</div><div class="price" style="color:var(--accent);font-weight:700;margin:4px 0">${x.p}</div><div class="rating" style="font-size:.75rem;color:var(--text2)">${x.r}</div></div>`).join('')}</div></div>`,
+    'login':`<div style="max-width:320px;margin:0 auto;padding:20px;background:var(--bg3);border-radius:12px"><h2 style="font-size:1.1rem;margin-bottom:16px;text-align:center">🔐 Login</h2><div style="margin-bottom:10px"><label style="font-size:.75rem;color:var(--text2);display:block;margin-bottom:4px">Username</label><input id="sim-username" type="text" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:.85rem;box-sizing:border-box"></div><div style="margin-bottom:10px"><label style="font-size:.75rem;color:var(--text2);display:block;margin-bottom:4px">Password</label><input id="sim-password" type="password" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:.85rem;box-sizing:border-box"></div><div style="margin-bottom:12px"><label style="font-size:.75rem;color:var(--text2);display:block;margin-bottom:4px">Role</label><select id="sim-role" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:.85rem"><option>user</option><option>admin</option></select></div><button id="sim-submit-btn" style="width:100%;padding:10px;background:var(--accent);color:var(--bg);border:none;border-radius:6px;font-weight:700">Login</button></div>`,
+    'dashboard':`<div style="max-width:500px;margin:0 auto"><div class="dashboard" style="padding:16px;background:var(--bg3);border-radius:8px;margin-bottom:12px"><h2 style="font-size:1.1rem;margin-bottom:8px">📊 Dashboard</h2><p style="color:var(--success);font-size:.85rem">✓ Welcome, john_doe (admin)</p></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">${[{l:'Users',v:'1,247',c:'var(--accent)'},{l:'Sales',v:'$48.5k',c:'var(--success)'},{l:'Errors',v:'3',c:'var(--danger)'}].map(x=>`<div style="padding:12px;background:var(--bg3);border-radius:8px;text-align:center"><div style="font-size:.7rem;color:var(--text2)">${x.l}</div><div style="font-size:1.2rem;font-weight:700;color:${x.c}">${x.v}</div></div>`).join('')}</div></div>`,
+    'news':`<div style="max-width:500px;margin:0 auto"><div class="main-header" style="padding:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:8px;margin-bottom:12px;color:var(--bg)"><h1 style="font-size:1.2rem;font-weight:700">📰 Daily News</h1><p style="font-size:.75rem;opacity:.8">Your trusted source for tech news</p></div><div style="display:flex;flex-direction:column;gap:10px">${['AI Breakthrough in Language Models','New JavaScript Framework Released','Cybersecurity Trends for 2025'].map((t,i)=>`<div style="padding:12px;background:var(--bg3);border-radius:8px;display:flex;gap:10px"><div style="width:60px;height:45px;background:var(--border);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.7rem">🖼️</div><div><div style="font-weight:600;font-size:.85rem">${t}</div><div style="font-size:.72rem;color:var(--text2);margin-top:2px">${i+2} hours ago</div></div></div>`).join('')}</div></div>`,
+    'news-noimg':`<div style="max-width:500px;margin:0 auto"><div style="padding:14px;background:var(--bg3);border-radius:8px;margin-bottom:12px"><h1 style="font-size:1.2rem;font-weight:700">📰 Daily News</h1><p style="font-size:.75rem;color:var(--text2)">Images blocked — faster load!</p></div><div style="display:flex;flex-direction:column;gap:10px">${['AI Breakthrough in Language Models','New JavaScript Framework Released','Cybersecurity Trends for 2025'].map((t,i)=>`<div style="padding:12px;background:var(--bg3);border-radius:8px"><div style="font-weight:600;font-size:.85rem">${t}</div><div style="font-size:.72rem;color:var(--text2);margin-top:2px">${i+2} hours ago · <span style="color:var(--danger)">🚫 image blocked</span></div></div>`).join('')}</div></div>`,
+    'report':`<div style="max-width:500px;margin:0 auto;background:var(--card);padding:24px;border-radius:8px;border:1px solid var(--border)"><div style="text-align:center;margin-bottom:16px"><h1 style="font-size:1.3rem">📄 Q4 Report 2024</h1><p style="font-size:.75rem;color:var(--text2)">Generated automatically</p></div><div style="border-top:2px solid var(--border);padding-top:12px"><p style="font-size:.85rem;line-height:1.6;color:var(--text2)">Revenue increased by 23% compared to Q3. Customer acquisition costs decreased by 12%...</p><div style="margin:12px 0;padding:12px;background:var(--bg3);border-radius:6px;text-align:center"><div style="font-size:.7rem;color:var(--text2)">Revenue</div><div style="font-size:1.4rem;font-weight:700;color:var(--success)">$2.4M ↑23%</div></div></div></div>`,
+    'api':`<div style="max-width:500px;margin:0 auto"><div style="padding:12px;background:var(--bg3);border-radius:8px;margin-bottom:12px"><h2 style="font-size:1rem">🔌 API Dashboard</h2></div><div style="font-family:var(--mono);font-size:.75rem;padding:12px;background:var(--code-bg);border-radius:8px;border:1px solid var(--code-border)"><div style="color:var(--success)">GET /api/users → 200 OK (45ms)</div><div style="color:var(--success)">GET /api/products → 200 OK (78ms)</div><div style="color:var(--warn)">GET /api/analytics → 301 Redirect (12ms)</div><div style="color:var(--success)">POST /api/auth → 200 OK (156ms)</div></div></div>`,
+    'error':`<div style="max-width:400px;margin:0 auto;text-align:center;padding:40px"><div style="font-size:3rem;margin-bottom:12px">⚠️</div><h2 style="color:var(--danger);font-size:1.2rem;margin-bottom:8px">Connection Error</h2><p style="color:var(--text2);font-size:.85rem">The server took too long to respond.</p></div>`,
+    'success':`<div style="max-width:500px;margin:0 auto"><div class="content" style="padding:20px;background:var(--bg3);border-radius:8px;text-align:center"><div style="font-size:2rem;margin-bottom:8px">✅</div><h2 style="font-size:1.1rem;margin-bottom:4px">Success!</h2><p style="color:var(--text2);font-size:.85rem">Content loaded after retry.</p></div></div>`
+  };
+  return pages[pageId]||pages['example'];
+}
+
+// ═══════════════════════════════════════════
+// CORE FUNCTIONS
+// ═══════════════════════════════════════════
+const t=(key)=>i18n[currentLang][key]||i18n.en[key]||key;
+const lt=(obj)=>obj[currentLang]||obj.en||'';
+
+function setLang(lang){
+  currentLang=lang;
+  document.documentElement.lang=lang;
+  document.documentElement.dir=lang==='ar'?'rtl':'ltr';
+  document.getElementById('lang-select').value=lang;
+  updateUI();
+}
+
+function setTheme(theme){
+  currentTheme=theme;
+  document.body.setAttribute('data-theme',theme);
+  document.getElementById('theme-select').value=theme;
+}
+
+function changeFontSize(delta){
+  fontSize=Math.max(-3,Math.min(3,fontSize+delta));
+  document.body.style.fontSize=(100+fontSize*8)+'%';
+}
+
+function togglePresentation(){
+  isPresentation=!isPresentation;
+  document.body.classList.toggle('presentation',isPresentation);
+  document.getElementById('pres-btn').style.background=isPresentation?'var(--accent)':'transparent';
+  document.getElementById('pres-btn').style.color=isPresentation?'var(--bg)':'';
+}
+
+function toggleFullscreen(){
+  if(!document.fullscreenElement)document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+}
+
+function showPage(page){
+  currentPage=page;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach((b,i)=>{
+    b.classList.toggle('active',['home','learn','play','demo'][i]===page);
+  });
+  if(page==='learn')renderLesson();
+  if(page==='play')renderPlay();
+}
+
+function updateUI(){
+  document.getElementById('hdr-title').textContent=t('title');
+  document.getElementById('hero-title').textContent=t('title');
+  document.getElementById('hero-tagline').textContent=t('tagline');
+  document.getElementById('total-score').textContent=totalScore;
+  document.getElementById('home-learn-desc').textContent=t('homeLearnDesc');
+  document.getElementById('home-play-desc').textContent=t('homePlayDesc');
+  document.getElementById('home-demo-desc').textContent=t('homeDemoDesc');
+  // Nav buttons
+  const navBtns=document.querySelectorAll('.nav-btn');
+  ['home','learn','play','demo'].forEach((k,i)=>{if(navBtns[i])navBtns[i].textContent=t(k)});
+  renderFeatures();
+  renderLessonSidebar();
+  if(currentPage==='learn')renderLesson();
+  if(currentPage==='play')renderPlay();
+  renderDemoTemplates();
+  renderShortcutHint();
+}
+
+function renderFeatures(){
+  const grid=document.getElementById('features-grid');
+  const feats=[
+    {icon:'📚',key:'featureLearn'},{icon:'🎮',key:'featurePlay'},
+    {icon:'🌍',key:'featureLang'},{icon:'🎨',key:'featureTheme'},
+    {icon:'⌨️',key:'featureKeys'},{icon:'📽',key:'featurePresent'}
+  ];
+  grid.innerHTML=feats.map(f=>`<div class="feature-item"><div class="fi-icon">${f.icon}</div><p>${t(f.key)}</p></div>`).join('');
+}
+
+function renderShortcutHint(){
+  document.getElementById('shortcut-hint').innerHTML=`${t('shortcutHint')} <span class="kbd">Ctrl+Enter</span> ${t('shortcutRun')} &nbsp; <span class="kbd">←→</span> ${t('shortcutNav')} &nbsp; <span class="kbd">F</span> ${t('shortcutFs')}`;
+}
+
+// ═══════════════════════════════════════════
+// ONBOARDING
+// ═══════════════════════════════════════════
+function advanceOnboarding(){
+  obStep++;
+  if(obStep>=3){
+    document.getElementById('onboarding').classList.add('hidden');
+    return;
+  }
+  const dots=document.querySelectorAll('#onboarding .ob-dot');
+  dots.forEach((d,i)=>d.classList.toggle('active',i===obStep));
+  const texts=[
+    [t('obWelcome'),t('obText1'),t('obNext')],
+    ['🎯',t('obText2'),t('obNext')],
+    ['🚀',t('obText3'),t('obStart')]
+  ];
+  document.getElementById('ob-title').textContent=texts[obStep][0];
+  document.getElementById('ob-text').textContent=texts[obStep][1];
+  document.getElementById('ob-btn').textContent=texts[obStep][2];
+}
+
+// ═══════════════════════════════════════════
+// LEARN
+// ═══════════════════════════════════════════
+const moduleNames=['mod1','mod2','mod3','mod4'];
+const moduleLessons=[[0,1,2,3],[4,5,6,7],[8,9,10],[11]];
+
+function renderLessonSidebar(){
+  const sb=document.getElementById('lesson-sidebar');
+  let html='';
+  moduleLessons.forEach((group,mi)=>{
+    html+=`<div class="module-title">${t(moduleNames[mi])}</div>`;
+    group.forEach(li=>{
+      const l=lessons[li];
+      const cls=li===currentLesson?'active':completedLessons.has(li)?'completed':'';
+      html+=`<div class="lesson-item ${cls}" onclick="selectLesson(${li})">
+        <span class="li-num">${completedLessons.has(li)?'✓':(li+1)}</span>
+        <span>${lt(l)?.title||''}</span>
+      </div>`;
+    });
+  });
+  sb.innerHTML=html;
+}
+
+function selectLesson(idx){currentLesson=idx;renderLessonSidebar();renderLesson()}
+
+function renderLesson(){
+  const l=lessons[currentLesson];
+  const loc=lt(l);
+  const progress=Math.round((completedLessons.size/lessons.length)*100);
+  const content=document.getElementById('lesson-content');
+
+  content.innerHTML=`
+    <div class="lesson-header">
+      <div style="font-size:.75rem;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">${t('lesson')} ${currentLesson+1} / ${lessons.length}</div>
+      <h2>${loc.title}</h2>
+      <p>${loc.obj}</p>
+      <div class="progress-track"><div class="progress-fill" style="width:${progress}%"></div></div>
+    </div>
+    <div class="split-view">
+      <div>
+        <div class="code-panel">
+          <div class="code-panel-header">
+            <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+            <span>script.js</span>
+          </div>
+          <div class="code-body mono" id="lesson-code"></div>
+        </div>
+        <div class="flex gap-8 mt-12">
+          <button class="btn" onclick="runLessonSim()" id="lesson-run-btn">${t('run')}</button>
+          ${currentLesson>0?`<button class="btn btn-outline" onclick="selectLesson(${currentLesson-1})">${t('prev')}</button>`:''}
+          ${currentLesson<lessons.length-1?`<button class="btn btn-outline" onclick="selectLesson(${currentLesson+1})">${t('next')}</button>`:''}
+        </div>
+        <div class="mt-12">
+          <div class="console-panel">
+            <div class="console-header"><span>${t('console')}</span></div>
+            <div class="console-body" id="lesson-console"></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="browser-sim">
+          <div class="browser-chrome">
+            <div class="dots"><span class="bdot r"></span><span class="bdot y"></span><span class="bdot g"></span></div>
+            <div class="browser-nav"><button>◀</button><button>▶</button><button>↻</button></div>
+            <div class="address-bar" id="lesson-address">about:blank</div>
+          </div>
+          <div class="browser-body" id="lesson-browser">
+            <div style="color:var(--text2);text-align:center;padding:40px"><div style="font-size:2rem;margin-bottom:8px">🎭</div>${t('run')} to start</div>
+          </div>
+        </div>
+        <div class="explain-panel mt-12">
+          <h4>${t('whatHappened')}</h4>
+          <p>${loc.explain}</p>
+        </div>
+        <div class="quiz-panel mt-12" id="lesson-quiz">
+          <h4>❓ ${t('quizQ')}</h4>
+          <p style="margin-bottom:10px;font-size:.88rem">${loc.quiz.q}</p>
+          ${loc.quiz.opts.map((o,i)=>`<button class="quiz-option" onclick="checkQuiz(${currentLesson},${i},this)">${o}</button>`).join('')}
+          <div id="quiz-result-${currentLesson}"></div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Render syntax-highlighted code
+  renderCode('lesson-code',l.code);
+}
+
+function renderCode(containerId,code){
+  const el=document.getElementById(containerId);
+  if(!el)return;
+  const lines=code.split('\n');
+  el.innerHTML=lines.map((line,i)=>`<span class="code-line" data-line="${i+1}">${highlightSyntax(escapeHtml(line))}</span>`).join('\n');
+}
+
+function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function highlightSyntax(line){
+  return line
+    .replace(/\/\/.*/g,m=>`<span class="cm">${m}</span>`)
+    .replace(/\b(const|let|var|async|await|function|return|if|else|for|try|catch|finally|throw|new|true|false|null)\b/g,'<span class="kw">$1</span>')
+    .replace(/('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`(?:[^`\\]|\\.)*`)/g,'<span class="str">$1</span>')
+    .replace(/\b(\d+)\b/g,'<span class="num">$1</span>')
+    .replace(/\.(launch|newPage|goto|close|screenshot|pdf|click|type|select|waitForSelector|waitForFunction|evaluate|setViewport|setUserAgent|setRequestInterception|setDefaultTimeout|tracing|metrics|abort|continue|on|\$\$eval|\$eval|\$)\b/g,'.<span class="fn">$1</span>');
+}
+
+// ═══════════════════════════════════════════
+// SIMULATION ENGINE
+// ═══════════════════════════════════════════
+async function runLessonSim(){
+  const l=lessons[currentLesson];
+  const btn=document.getElementById('lesson-run-btn');
+  btn.textContent=t('running');btn.disabled=true;
+  const consoleEl=document.getElementById('lesson-console');
+  const browserEl=document.getElementById('lesson-browser');
+  const addressEl=document.getElementById('lesson-address');
+  consoleEl.innerHTML='';
+  browserEl.innerHTML='<div style="color:var(--text2);text-align:center;padding:40px">Initializing...</div>';
+  addressEl.textContent='about:blank';
+
+  // Clear all executing highlights
+  document.querySelectorAll('#lesson-code .code-line').forEach(l=>l.classList.remove('executing'));
+
+  for(const step of l.sim.steps){
+    // Highlight current line
+    document.querySelectorAll('#lesson-code .code-line').forEach(l=>l.classList.remove('executing'));
+    const targetLine=document.querySelector(`#lesson-code .code-line[data-line="${step.line}"]`);
+    if(targetLine){targetLine.classList.add('executing');targetLine.scrollIntoView({block:'center',behavior:'smooth'})}
+
+    // Console output
+    const cls=step.action==='error'?'error':step.action==='block'?'warn':step.action==='log'?'info':'success';
+    const time=new Date().toLocaleTimeString();
+    consoleEl.innerHTML+=`<div class="console-line ${cls}"><span class="timestamp">${time}</span>${escapeHtml(step.msg)}</div>`;
+    consoleEl.scrollTop=consoleEl.scrollHeight;
+
+    // Browser actions
+    if(step.action==='goto'&&step.page){
+      addressEl.textContent=step.url||'';
+      browserEl.innerHTML='<div class="browser-loading"></div>';
+      await delay(300);
+      browserEl.innerHTML=renderSimPage(step.page);
+    }
+    if(step.action==='type'&&step.target){
+      const input=browserEl.querySelector(`#sim-${step.target}`);
+      if(input){
+        input.classList.add('sim-highlight');
+        input.value='';
+        for(const ch of step.text){
+          input.value+=ch;
+          await delay(60);
+        }
+        setTimeout(()=>input.classList.remove('sim-highlight'),500);
+      }
+    }
+    if(step.action==='select'&&step.target){
+      const sel=browserEl.querySelector(`#sim-${step.target}`);
+      if(sel){sel.classList.add('sim-highlight');sel.value=step.text;setTimeout(()=>sel.classList.remove('sim-highlight'),500)}
+    }
+    if(step.action==='click'&&step.target){
+      const el=browserEl.querySelector(`#sim-${step.target}`)||browserEl.querySelector(`#sim-${step.target}-btn`);
+      if(el){el.classList.add('sim-highlight');setTimeout(()=>el.classList.remove('sim-highlight'),600)}
+    }
+    if(step.action==='screenshot'||step.action==='screenshot-full'){
+      browserEl.style.outline='3px solid var(--accent)';
+      await delay(200);
+      browserEl.style.outline='none';
+    }
+    if(step.action==='screenshot-element'&&step.target){
+      const h=browserEl.querySelector('.main-header');
+      if(h){h.classList.add('sim-highlight');setTimeout(()=>h.classList.remove('sim-highlight'),800)}
+    }
+    if(step.action==='close'){
+      browserEl.innerHTML='<div style="color:var(--text2);text-align:center;padding:40px"><div style="font-size:2rem;margin-bottom:8px">✓</div>Browser closed</div>';
+      addressEl.textContent='about:blank';
+    }
+
+    await delay(step.dur||500);
+  }
+
+  document.querySelectorAll('#lesson-code .code-line').forEach(l=>l.classList.remove('executing'));
+  btn.textContent=t('run');btn.disabled=false;
+
+  // Mark lesson as completed
+  if(!completedLessons.has(currentLesson)){
+    completedLessons.add(currentLesson);
+    checkBadge('first-run');
+    if(completedLessons.size>=6)checkBadge('half-lessons');
+    if(completedLessons.size>=lessons.length)checkBadge('all-lessons');
+    if(completedLessons.size>=3)checkBadge('fast-learner');
+    renderLessonSidebar();
+  }
+}
+
+function delay(ms){return new Promise(r=>setTimeout(r,ms))}
+
+function checkQuiz(lessonIdx,ansIdx,btn){
+  const l=lessons[lessonIdx];
+  const quiz=lt(l).quiz;
+  const correct=ansIdx===quiz.ans;
+  btn.classList.add(correct?'correct':'wrong');
+  const result=document.getElementById('quiz-result-'+lessonIdx);
+  if(correct){
+    result.innerHTML=`<div class="quiz-result pass">${t('correct')}</div>`;
+    if(!completedLessons.has(lessonIdx)){
+      totalScore+=50;
+      document.getElementById('total-score').textContent=totalScore;
+    }
+  } else {
+    result.innerHTML=`<div class="quiz-result fail">${t('incorrect')}</div>`;
+  }
+  // Disable all options
+  btn.closest('.quiz-panel').querySelectorAll('.quiz-option').forEach(b=>{b.disabled=true;if(lessons[lessonIdx][currentLang].quiz.opts.indexOf(b.textContent)===quiz.ans)b.classList.add('correct')});
+}
+
+// ═══════════════════════════════════════════
+// PLAY / CHALLENGES
+// ═══════════════════════════════════════════
+function renderPlay(){
+  const overview=document.getElementById('play-overview');
+  const active=document.getElementById('challenge-active');
+  active.classList.add('hidden');
+  overview.classList.remove('hidden');
+
+  // Rank
+  const rankEl=document.getElementById('rank-display');
+  let rank=0;if(totalScore>=500)rank=1;if(totalScore>=1200)rank=2;
+  const rankIcons=['🥉','🥈','🥇'];
+  rankEl.innerHTML=`<div class="rank-icon">${rankIcons[rank]}</div><div class="rank-name">${t('rank'+rank)}</div><div class="rank-score">${totalScore} ${t('points')}</div>`;
+
+  // Badges
+  const badgesEl=document.getElementById('badges-row');
+  badgesEl.innerHTML=badges.map(b=>`<div class="badge ${earnedBadges.has(b.id)?'earned':''}"><span class="badge-icon">${b.icon}</span>${b[currentLang]||b.en}</div>`).join('');
+
+  // Challenges grid
+  const grid=document.getElementById('challenges-grid');
+  grid.innerHTML=challenges.map((c,i)=>{
+    const loc=lt(c);
+    const done=completedChallenges.has(c.id);
+    return `<div class="challenge-card ${done?'completed-card':''}" onclick="startChallenge(${i})">
+      <span class="challenge-diff ${c.diff}">${t(c.diff)}</span>
+      <h3 style="margin:8px 0 4px;font-size:1rem">${loc.title}</h3>
+      <p style="color:var(--text2);font-size:.82rem">${loc.desc}</p>
+      <div class="challenge-pts">${c.pts} ${t('points')}</div>
+    </div>`;
+  }).join('');
+}
+
+function startChallenge(idx){
+  const c=challenges[idx];
+  const loc=lt(c);
+  document.getElementById('play-overview').classList.add('hidden');
+  const active=document.getElementById('challenge-active');
+  active.classList.remove('hidden');
+  active.innerHTML=`
+    <div style="margin-bottom:16px"><button class="btn btn-outline btn-sm" onclick="renderPlay()">${t('back')}</button></div>
+    <div class="lesson-header">
+      <span class="challenge-diff ${c.diff}">${t(c.diff)}</span>
+      <h2 style="margin:8px 0">${loc.title}</h2>
+      <p>${loc.desc}</p>
+      <div class="challenge-pts" style="margin-top:8px">${c.pts} ${t('points')}</div>
+    </div>
+    <div class="mt-12">
+      <textarea class="code-editor" id="challenge-editor" rows="14" spellcheck="false" placeholder="// Write your Puppeteer script here...
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  
+  // Your code here...
+  
+  await browser.close();
+})();">${''}</textarea>
+    </div>
+    <div class="flex gap-8 mt-12">
+      <button class="btn" onclick="checkChallenge(${idx})">${t('check')}</button>
+      <button class="btn btn-outline" onclick="showHint(${idx})">${t('hint')}</button>
+    </div>
+    <div id="challenge-hint-${idx}" class="hidden mt-12 explain-panel"></div>
+    <div id="challenge-result-${idx}" class="mt-12"></div>
+  `;
+}
+
+function showHint(idx){
+  const c=challenges[idx];
+  const loc=lt(c);
+  const el=document.getElementById('challenge-hint-'+idx);
+  el.classList.remove('hidden');
+  el.innerHTML=`<h4>💡 ${t('hint')}</h4><p style="font-family:var(--mono);font-size:.82rem">${loc.hint}</p>`;
+}
+
+function checkChallenge(idx){
+  const c=challenges[idx];
+  const code=document.getElementById('challenge-editor').value;
+  const result=document.getElementById('challenge-result-'+idx);
+  const allFound=c.answer.every(keyword=>code.includes(keyword));
+
+  if(allFound){
+    result.innerHTML=`<div class="quiz-result pass">${t('correct')} +${c.pts} ${t('points')}</div>`;
+    if(!completedChallenges.has(c.id)){
+      completedChallenges.add(c.id);
+      totalScore+=c.pts;
+      document.getElementById('total-score').textContent=totalScore;
+      if(completedChallenges.size===1)checkBadge('first-challenge');
+      if(c.id==='c4'||c.id==='c7')checkBadge('data-miner');
+      if(completedChallenges.size>=challenges.length)checkBadge('master');
+    }
+  } else {
+    const missing=c.answer.filter(k=>!code.includes(k));
+    result.innerHTML=`<div class="quiz-result fail">${t('incorrect')} — Missing: <code style="font-family:var(--mono)">${missing.join(', ')}</code></div>`;
+  }
+}
+
+function checkBadge(id){
+  if(!earnedBadges.has(id)){earnedBadges.add(id)}
+}
+
+// ═══════════════════════════════════════════
+// DEMO LAB
+// ═══════════════════════════════════════════
+function renderDemoTemplates(){
+  const picker=document.getElementById('template-picker');
+  picker.innerHTML=demoTemplates.map((tp,i)=>`<button class="template-btn" onclick="loadTemplate(${i})" id="tpl-btn-${i}">${tp[currentLang]||tp.en}</button>`).join('');
+}
+
+function loadTemplate(idx){
+  document.getElementById('demo-editor').value=demoTemplates[idx].code;
+  document.querySelectorAll('.template-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tpl-btn-'+idx).classList.add('active');
+}
+
+function clearDemoConsole(){document.getElementById('demo-console-body').innerHTML=''}
+
+function switchDemoTab(tab){
+  demoTab=tab;
+  document.querySelectorAll('#demo-output-tabs .output-tab').forEach(t=>t.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+async function runDemo(){
+  if(demoRunning)return;
+  demoRunning=true;
+  const btn=document.getElementById('demo-run-btn');
+  btn.textContent=t('running');btn.disabled=true;
+  const consoleEl=document.getElementById('demo-console-body');
+  const browserEl=document.getElementById('demo-browser-body');
+  const addressEl=document.getElementById('demo-address');
+  const outputEl=document.getElementById('demo-output-content');
+  consoleEl.innerHTML='';
+
+  const code=document.getElementById('demo-editor').value;
+  const time=()=>new Date().toLocaleTimeString();
+  const log=(msg,cls='info')=>{consoleEl.innerHTML+=`<div class="console-line ${cls}"><span class="timestamp">${time()}</span>${escapeHtml(msg)}</div>`;consoleEl.scrollTop=consoleEl.scrollHeight};
+
+  // Parse and simulate
+  log('Starting Puppeteer simulation...','info');
+  await delay(400);
+
+  if(code.includes('puppeteer.launch')){
+    log('✓ Browser launched','success');
+    await delay(300);
+  }
+
+  // Detect URL
+  const urlMatch=code.match(/page\.goto\(['"]([^'"]+)['"]\)/);
+  if(urlMatch){
+    const url=urlMatch[1];
+    log('Navigating to '+url,'info');
+    addressEl.textContent=url;
+    browserEl.innerHTML='<div class="browser-loading"></div>';
+    await delay(600);
+    // Pick a simulated page
+    let pg='example';
+    if(url.includes('login'))pg='login';
+    else if(url.includes('shop')||url.includes('product'))pg='products';
+    else if(url.includes('news'))pg='news';
+    else if(url.includes('report'))pg='report';
+    else if(url.includes('api'))pg='api';
+    browserEl.innerHTML=renderSimPage(pg);
+    log('✓ Page loaded','success');
+    await delay(300);
+  }
+
+  if(code.includes('page.type')){
+    log('Typing into form fields...','info');
+    await delay(500);
+    log('✓ Form filled','success');
+  }
+  if(code.includes('page.click')){
+    log('Clicking element...','info');
+    await delay(400);
+    log('✓ Element clicked','success');
+  }
+  if(code.includes('page.screenshot')){
+    log('📸 Taking screenshot...','info');
+    browserEl.style.outline='3px solid var(--accent)';
+    await delay(400);
+    browserEl.style.outline='none';
+    log('✓ Screenshot saved','success');
+    outputEl.innerHTML=`<div style="text-align:center;padding:20px"><div style="font-size:2rem;margin-bottom:8px">📸</div><p style="color:var(--success)">Screenshot captured successfully!</p><div style="margin-top:12px;padding:16px;background:var(--bg3);border-radius:8px;border:2px dashed var(--accent)">${browserEl.innerHTML.substring(0,200)}...</div></div>`;
+  }
+  if(code.includes('page.pdf')){
+    log('📄 Generating PDF...','info');
+    await delay(600);
+    log('✓ PDF saved','success');
+    outputEl.innerHTML=`<div style="text-align:center;padding:20px"><div style="font-size:2rem;margin-bottom:8px">📄</div><p style="color:var(--success)">PDF generated successfully!</p><p style="font-size:.8rem;color:var(--text2);margin-top:8px">Format: A4 • Background: enabled</p></div>`;
+  }
+  if(code.includes('$$eval')){
+    log('Extracting data from page...','info');
+    await delay(500);
+    log('✓ Data extracted: 4 items found','success');
+    outputEl.innerHTML=`<table class="data-table"><thead><tr><th>Name</th><th>Price</th></tr></thead><tbody><tr><td>Laptop Pro</td><td style="color:var(--accent)">$999</td></tr><tr><td>Wireless Mouse</td><td style="color:var(--accent)">$29</td></tr><tr><td>Monitor 27"</td><td style="color:var(--accent)">$349</td></tr><tr><td>USB-C Hub</td><td style="color:var(--accent)">$49</td></tr></tbody></table>`;
+  }
+  if(code.includes('setRequestInterception')){
+    log('Request interception enabled','info');
+    await delay(200);
+    log('⛔ Blocked: 3 images','warn');
+    log('✅ Allowed: 2 scripts, 1 stylesheet','success');
+    outputEl.innerHTML=`<div class="waterfall">${[
+      {name:'document',type:'doc',w:80,t:'120ms'},
+      {name:'styles.css',type:'css',w:40,t:'45ms'},
+      {name:'app.js',type:'js',w:55,t:'78ms'},
+      {name:'banner.jpg',type:'blocked',w:0,t:'blocked'},
+      {name:'hero.png',type:'blocked',w:0,t:'blocked'},
+      {name:'logo.png',type:'blocked',w:0,t:'blocked'}
+    ].map(r=>`<div class="wf-row"><div class="wf-label">${r.name}</div><div class="wf-bar-track"><div class="wf-bar ${r.type}" style="width:${r.w}%"></div></div><div class="wf-time">${r.t}</div></div>`).join('')}</div>`;
+  }
+  if(code.includes('page.metrics')){
+    log('Collecting performance metrics...','info');
+    await delay(400);
+    log('Load time: 847ms','info');
+    log('JS Heap: 12.4 MB','info');
+    log('DOM Nodes: 1,247','info');
+  }
+  if(code.includes('setViewport')){
+    log('Viewport changed','info');await delay(200);
+  }
+
+  if(code.includes('browser.close')){
+    log('Browser closed','info');
+    await delay(200);
+  }
+
+  log('Simulation complete!','success');
+  btn.textContent=t('run');btn.disabled=false;
+  demoRunning=false;
+}
+
+function resetDemo(){
+  document.getElementById('demo-editor').value='';
+  document.getElementById('demo-console-body').innerHTML='';
+  document.getElementById('demo-browser-body').innerHTML=`<div style="color:var(--text2);text-align:center;padding:60px 20px"><div style="font-size:2rem;margin-bottom:8px">🎭</div>${t('livePreview')}</div>`;
+  document.getElementById('demo-address').textContent='about:blank';
+  document.getElementById('demo-output-content').innerHTML=`<div style="color:var(--text2);text-align:center;padding:40px">${t('run')} to start</div>`;
+  document.querySelectorAll('.template-btn').forEach(b=>b.classList.remove('active'));
+}
+
+// ═══════════════════════════════════════════
+// CHEAT SHEET
+// ═══════════════════════════════════════════
+function showCheatSheet(){
+  document.getElementById('cheat-modal').classList.remove('hidden');
+  const el=document.getElementById('cheat-content');
+  el.innerHTML=cheatSheetData.map(s=>`<div class="cheat-section"><h4>${s.cat}</h4>${s.items.map(i=>`<div class="cheat-item"><code>${i[0]}</code><span>${i[1]}</span></div>`).join('')}</div>`).join('');
+}
+
+// ═══════════════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ═══════════════════════════════════════════
+document.addEventListener('keydown',e=>{
+  // Ctrl+Enter → Run
+  if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){
+    e.preventDefault();
+    if(currentPage==='learn')runLessonSim();
+    else if(currentPage==='demo')runDemo();
+  }
+  // Arrow keys → navigate lessons
+  if(currentPage==='learn'&&!e.target.matches('textarea,input')){
+    if(e.key==='ArrowRight'&&currentLesson<lessons.length-1){selectLesson(currentLesson+1)}
+    if(e.key==='ArrowLeft'&&currentLesson>0){selectLesson(currentLesson-1)}
+  }
+  // F → fullscreen
+  if(e.key==='f'&&!e.target.matches('textarea,input,select')){
+    e.preventDefault();toggleFullscreen();
+  }
+});
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+updateUI();
+renderDemoTemplates();
+document.getElementById('demo-editor').value=demoTemplates[0].code;
+</script>
+</body>
+</html>
